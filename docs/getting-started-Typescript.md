@@ -14,7 +14,7 @@ As long as these rules are adhered to, the class is valid.
 
 #### 1) Creating an Abstract Class:
 
-```
+```ts
 abstract class MyClass
 ```   
 
@@ -25,13 +25,13 @@ this means ClassD's table will inherit columns from both ClassA and ClassB, whil
 
 #### 2) Making a Table Column Nullable:  
 
-```
+```ts
 propertyName?: string // or propertyName: string | undefined
 ```   
 
 #### 3) Making a Table Column Unique:
 
-```
+```ts
 propertyName: string | Unique
 ```   
 (you can import Unique from the package or just define ```type Unique = never```)
@@ -59,7 +59,7 @@ class Example {
 Each relational property will create a junction table named `className___propName_jt`.
 
 #### 5) Static ormClassSettings_ Property:
-```
+```ts
 Static ormClassSettings_ = {idType: 'UUID' | 'INT' | 'BIGINT'} // or {primaryType: 'UUID' | 'INT' | 'BIGINT'}
 ``` 
 
@@ -74,14 +74,15 @@ At the moment, this is the only class setting supported, but it may evolve in th
  
 **SQLite**  
 
-```
+```ts
 import { DatabaseSync } from 'node:sqlite'   
 const yourDbConnection = new DatabaseSync('your-db-name')
 ```
 
 **Postgresql**
 
-```import pkg from 'pg'
+```ts
+import pkg from 'pg'
 const { Pool } = pkg
 
 // Create a pool instance
@@ -108,7 +109,7 @@ const ormConfig: OrmConfigObj = {
 primaryType sets the default id type on all classes, which can be overridden as explained in **'Defining Classes' - section 5**.
 
 #### 3-a) Build Step - Webpack:
-```
+```js
 // in your webpack.config file add:
 import { MasqueradePlugin } from './plugin.js'
 
@@ -130,13 +131,14 @@ import { MasqueradePlugin } from './plugin.js'
 ```
 
 #### 3-b) Build Step - Without Webpack:
-First run ```npx orm-ts-setup``` in your terminal before your compile step. Then, compile and import ```Setup4Typescript``` into your entry point, and run it before the boot method (shown below in **section 4**).    
+First run ```bash npx orm-ts-setup``` in your terminal before your compile step. Then, compile and import ```Setup4Typescript``` into your entry point, and run it before the boot method (shown below in **section 4**).    
 
 **Note:**  
 Whenever you make changes to classes that descend from `Entity`, `Setup4Typescript` must be rebuilt or updated.  
 To prevent the ORM from being out of sync with the actual classes passed in, it is recommended to combine `npx orm-ts-setup` with your build step.  
 
-**Example:** ```npx orm-ts-setup && tsc```
+**Example:** ```bash
+npx orm-ts-setup && tsc```
 
 #### 4) Boot ORM:
 
@@ -144,8 +146,10 @@ To prevent the ORM from being out of sync with the actual classes passed in, it 
 import * as classes from "./classes"
 import * as moreClasses from "./moreClasses"
 import { SomeClass } from "./aSingleClass"
+if (usingWebpack) {
 import { Setup4Typescript } from "some/path"
 Setup4Typescript()
+}
 await ORM.typescriptBoot(ormConfig, classes, moreClasses, someClass)
 ```
 
