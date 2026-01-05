@@ -47,11 +47,12 @@ MasqueradeORM currently supports the following SQL clients:
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body
 
-  const uniqueCheck = await User.find({relationalWhere: (user) => sql`${user.username} = ${username} OR ${user.email} = ${email}`})
-  if (uniqueCheck.length) {
-    return res.status(400).json({ message: 'User already exists.' })
-  }
+  const uniqueCheck = await User.find({
+    relationalWhere: (user) => sql`${user.username} = ${username} OR ${user.email} = ${email}`
+  })
 
+  if (uniqueCheck.length) return res.status(400).json({ message: 'User already exists.' })
+  
   try {
     const hashedPassword = await bcrypt.hash(password, 10)
     const newUser = new User(username, email, hashedPassword)
@@ -75,10 +76,8 @@ app.post('/chat/add-admin', async (req, res) => {
     }
   })[0]
 
-  if (!chat) {
-    return res.status(400).json({ message: 'Bad Request.' })
-  }
-
+  if (!chat) return res.status(400).json({ message: 'Bad Request.' })
+  
   try {
     chat.chatSettings.adminIds.push(newAdminId)
     res.status(200).json({ message: 'New chat admin added.' })
@@ -107,10 +106,8 @@ app.post('/chat/add-message', async (req, res) => {
     }
   })[0]
 
-  if (!chat) {
-    return res.status(400).json({ message: 'Chat not found or user not part of chat.' })
-  }
-
+  if (!chat) return res.status(400).json({ message: 'Chat not found or user not part of chat.' })
+  
   try {
     const newMessage = new Message(senderId, messageContent, new Date())
     chat.messages.push(newMessage)
