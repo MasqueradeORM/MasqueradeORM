@@ -85,12 +85,12 @@ const yourDbConnection = new DatabaseSync('your-db-name')
 import { Pool } from 'pg'
 
 // Create a pool instance
-const pool = new Pool({
-  user: 'your_db_user',          // Database username
-  host: 'localhost',             // Database host (localhost or IP address)
-  database: 'your_db_name',      // Database name
-  password: 'your_db_password',  // Database password
-  port: 5432,                    // Port PostgreSQL is running on (default is 5432)
+const yourDbConnection = new Pool({
+    user: 'your_db_user',         // e.g., 'postgres'
+    host: 'localhost',            // database host
+    database: 'your_db_name',     // database name
+    password: 'your_db_password', // your password
+    port: 5432,                   // default PostgreSQL port
 })
 ```
 
