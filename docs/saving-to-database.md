@@ -18,4 +18,5 @@ This guarantees that all pending instances are flushed to the database before re
 If you intend to execute raw SQL queries after using the ORM’s find methods within the same environment scope, you should explicitly call:
 ```js
 await flush()
+// now you can safely do raw sql queries with any previous changes persisting on the database.
 ```
