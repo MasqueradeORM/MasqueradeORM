@@ -1,8 +1,9 @@
 
 
 import { ChangeLogger } from "../changeLogger/changeLogger.js"
-import { dependenciesSymb, OrmStoreSymb, referencesSymb } from "../misc/constants.js"
+import { dependenciesSymb, referencesSymb } from "../misc/constants.js"
 import { nonSnake2Snake } from "../misc/miscFunctions.js"
+import { OrmStore } from "../misc/ormStore.js"
 import { insertProxyIntoEntityMap, proxifyEntityInstanceObj } from "../proxies/instanceProxy.js"
 import { throwDeletionErr, throwImproperDecouplingErr, validateDependentDataDecoupling } from "./delete/delete.js"
 import { insertDependentsData, internalFind } from "./delete/getDependents.js"
@@ -15,20 +16,20 @@ import { mergeWhereScope } from "./find/where/where.js"
 
 /**
  * @template T
- * @typedef {import("../misc/types").FindObj<T>} FindObj
+ * @typedef {import("../misc/types.js").FindObj<T>} FindObj
  */
 
 export class Entity {
   //@ts-ignore
-/**@type {string | number}*/ id
-/**@type {Date}*/ updatedAt
+  /**@type {string | number}*/ id
+  /**@type {Date}*/ updatedAt
 
   /** @abstract */
   constructor() {
     const className = this.constructor.name
 
-    const { classWikiDict, idLogger, entityMapsObj } = globalThis[OrmStoreSymb]
-    if (!classWikiDict) throw new Error("ORM not initialized, please call Entity.initOrm(pool) before using the ORM.")
+    const { classWikiDict, idLogger, entityMapsObj } = OrmStore.store
+    if (!classWikiDict) throw new Error("ORM is not initialized. Please call the appropriate ORM boot method before use.")
     else if (!classWikiDict[className]) throw new Error(`Cannot create an instance of class '${className}' since it is an abstract class.`)
 
     let idVal
@@ -50,19 +51,23 @@ export class Entity {
     return proxy
   }
 
-
   /**
-   * @template T
-   * @this {{ new(...args: any[]): T }}
-   * @param {FindObj<T>} findObj
-   * @returns {Promise<T[]>}
-   */
+   * Finds instances in the database that match the given argument.
+   * Relations do not get filtered by any where condition, only the root instances get filtered.
+   * (RootClass.find(arg)) => only RootClass instances matching the arg's where conditions get returned. 
+   *
+     * @template T
+     * @this {{ new(...args: any[]): T }}
+     * @param {FindObj<T>} findObj
+     * @returns {Promise<T[]>}
+     */
   static async find(findObj) {
-    const { dbConnection, sqlClient, entities, classWikiDict } = globalThis[OrmStoreSymb]
-    if (!dbConnection) throw new Error("ORM not initialized, please call Entity.initOrm(pool) before using the ORM.")
+    const { dbConnection, sqlClient, entities, classWikiDict } = OrmStore.store
+    if (!dbConnection) throw new Error("ORM is not initialized. Please call the appropriate ORM boot method before use.")
     if (ChangeLogger.scheduledFlush) await ChangeLogger.save()
 
     let classWiki = classWikiDict[this.name]
+    if (!classWiki) throw new Error(`The class '${this.name}' has not been included in the ORM boot method.`)
     const [relationsArg, whereArg, relationalWhereArg] = destructureAndValidateArg(findObj)
     let findWiki
     const baseProxyMap = classWiki2ScopeProxy(classWiki)
@@ -80,8 +85,8 @@ export class Entity {
   }
 
   // async save() {
-  //   const { dbConnection, classWikiDict } = globalThis[OrmStoreSymb]
-  //   if (!dbConnection) throw new Error("ORM not initialized, please call Entity.initOrm(pool) before using the ORM.")
+  //   const { dbConnection, classWikiDict } = OrmStore.store
+  //   if (!dbConnection) throw new Error("ORM is not initialized. Please call the appropriate ORM boot method before use.")
   //   const className = this.constructor.name
   //   let classWiki = classWikiDict[className]
 
@@ -100,9 +105,12 @@ export class Entity {
   //   }
   // }
 
+/**
+* Hard deletes the instance from the database.
+*/
   async delete() {
-    const { dbConnection, classWikiDict, dependentsMapsObj, dbChangesObj } = globalThis[OrmStoreSymb]
-    if (!dbConnection) throw new Error("ORM not initialized, please call Entity.initOrm(pool) before using the ORM.")
+    const { dbConnection, classWikiDict, dependentsMapsObj, dbChangesObj } = OrmStore.store
+    if (!dbConnection) throw new Error("ORM is not initialized. Please call the appropriate ORM boot method before use.")
 
     const id4Deletion = this.id
     const className = this.constructor.name
@@ -143,12 +151,18 @@ export class Entity {
     if (dbChangesObj[className] && dbChangesObj[className][id4Deletion]) delete dbChangesObj[className][id4Deletion]
   }
 
+/**
+ * A required pre-deletion step.
+ * Finds all instances that have a one-to-one relation with the calling instance,
+ * where the related property cannot be undefined.
+ * These relations must be reassigned before the calling instance can be safely deleted.
+ */
   async getDependents() {
     if (!this.id) return undefined
     const returnedObj = {}
     const className = this.constructor.name
     const dependedOnId = this.id
-    const { classWikiDict, dependentsMapsObj } = globalThis[OrmStoreSymb]
+    const { classWikiDict, dependentsMapsObj } = OrmStore.store
 
     const classWiki = classWikiDict[className]
     const dependencyContext = classWiki[dependenciesSymb]
@@ -162,12 +176,16 @@ export class Entity {
     return returnedObj
   }
 
+/**
+ * Finds all instances that have a relation with the calling instance,
+ * This method is a superset of the getDependents method, and is not meant as a pre-deletion step, but as a utility.
+ */
   async getReferencers() {
     if (!this.id) return undefined
     const returnedObj = {}
     const className = this.constructor.name
     const referencedId = this.id
-    const { classWikiDict, dependentsMapsObj } = globalThis[OrmStoreSymb]
+    const { classWikiDict, dependentsMapsObj } = OrmStore.store
     const classWiki = classWikiDict[className]
 
     const referencesContext = classWiki[referencesSymb]

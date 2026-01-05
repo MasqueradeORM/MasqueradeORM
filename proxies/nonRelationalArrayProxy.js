@@ -1,13 +1,12 @@
 import { ChangeLogger } from "../changeLogger/changeLogger.js"
-import { OrmStoreSymb } from "../misc/constants.js"
 import { getValidTypedArray } from "../misc/miscFunctions.js"
+import { OrmStore } from "../misc/ormStore.js"
 import { setUpdatedAtValue } from "./instanceProxy.js"
 import { createObjectProxy } from "./objectProxy.js"
 
 
 export function createNonRelationalArrayProxy(instanceContainingArray, propertyName, array, /**@type {string | undefined}*/ arrElementValidType = undefined, arrayOfObjects = false) {
     const instanceClass = instanceContainingArray.constructor.name
-    const classChangeObj = globalThis[OrmStoreSymb].dbChangesObj[instanceClass] ??= {}
     //if arrElementValidType is undefined, it just means that the array we are proxifying is an array we got from the db, so the typing is correct.
     if (arrElementValidType) array = getValidTypedArray(array, arrElementValidType, false)
     if (arrayOfObjects) {
@@ -22,21 +21,22 @@ export function createNonRelationalArrayProxy(instanceContainingArray, propertyN
         },
         set(/**@type {any[]}*/ target, key, value, receiver) {
             if (key === "length") return Reflect.set(target, key, value, receiver)
-            return nonRelationalArrayProxySetHandler(target, key, value, propertyName, instanceContainingArray, classChangeObj, arrayOfObjects)
+            return nonRelationalArrayProxySetHandler(target, key, value, propertyName, instanceContainingArray, arrayOfObjects, instanceClass)
         },
         deleteProperty(target, key) {
-            return nonRelationalArrayProxyDeleteHandler(target, key, propertyName, instanceContainingArray, classChangeObj)
+            return nonRelationalArrayProxyDeleteHandler(target, key, propertyName, instanceContainingArray, instanceClass)
         }
     })
 }
 
 
-export function nonRelationalArrayProxyDeleteHandler(array, key, propertyName, instanceContainingArray, classChangeObj) {
+export function nonRelationalArrayProxyDeleteHandler(array, key, propertyName, instanceContainingArray, instanceClass) {
     const validProp = Object.hasOwn(array, key)
     if (validProp) {
         //@ts-ignore
         const index = parseInt(key)
         if (index > -1) {
+            const classChangeObj = OrmStore.getClassChangeObj(instanceClass)
             const instanceChangesObj = classChangeObj[instanceContainingArray.id] ??= {}
             instanceChangesObj[propertyName] = array
             ChangeLogger.flushChanges()
@@ -49,9 +49,10 @@ export function nonRelationalArrayProxyDeleteHandler(array, key, propertyName, i
     return false
 }
 
-export function nonRelationalArrayProxySetHandler(array, key, value, propertyName, instanceContainingArray, classChangeObj, arrayOfObjects) {
+export function nonRelationalArrayProxySetHandler(array, key, value, propertyName, instanceContainingArray, arrayOfObjects, instanceClass) {
     const index = parseInt(key)
     if (index > -1) {
+        const classChangeObj = OrmStore.getClassChangeObj(instanceClass)
         const instanceChangesObj = classChangeObj[instanceContainingArray.id] ??= {}
         setUpdatedAtValue(instanceContainingArray, instanceChangesObj)
         if (arrayOfObjects) {

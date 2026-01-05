@@ -1,4 +1,4 @@
-import { OrmStoreSymb } from "../../misc/constants.js"
+
 import { coloredBackgroundConsoleLog, getType, jsValue2SqliteValue, postgres2sqliteQueryStr } from "../../misc/miscFunctions.js"
 import { rowObj2InstanceProxy } from "../../proxies/instanceProxy.js"
 import { createRelationalArrayProxy } from "../../proxies/relationalArrayProxy.js"
@@ -6,6 +6,7 @@ import { generateQueryStrWithCTEs } from "./queryBuilder.js"
 import { junctionJoin, parentJoin } from "./joins.js"
 import { relationalWhereFuncs2Statements } from "./where/relationalWhere.js"
 import { whereValues2Statements } from "./where/where.js"
+import { OrmStore } from "../../misc/ormStore.js"
 
 export const proxyType = Symbol('proxyType')
 
@@ -68,7 +69,7 @@ export function parseFindWiki(findWiki, aliasBase = 'a', aliasArr = [], joinStat
 }
 
 export async function aliasedFindWiki2QueryRes(aliasedFindWiki, joinStatements, whereObj, eagerLoadObj, classWiki, dbConnection, forInternalFind = false) {
-    const sqlClient = globalThis[OrmStoreSymb].sqlClient
+    const sqlClient = OrmStore.store.sqlClient
     let [queryString, relationsScope] = generateQueryStrWithCTEs(aliasedFindWiki, joinStatements, whereObj, eagerLoadObj, classWiki, sqlClient)
     //@ts-ignore
     if (forInternalFind) queryString = queryString.replace(/\bAND\b/g, `OR`)

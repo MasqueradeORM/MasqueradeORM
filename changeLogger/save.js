@@ -1,5 +1,6 @@
-import { newEntityInstanceSymb, OrmStoreSymb } from "../misc/constants.js"
+import { newEntityInstanceSymb } from "../misc/constants.js"
 import { coloredBackgroundConsoleLog, getPropertyClassification, jsValue2SqliteValue, nonSnake2Snake } from "../misc/miscFunctions.js"
+import { OrmStore } from "../misc/ormStore.js"
 import { ChangeLogger } from "./changeLogger.js"
 import { junctionTableRemovalPostgres } from "./sqlClients/postgres.js"
 import { junctionTableRemovalSqlite } from "./sqlClients/sqlite.js"
@@ -8,7 +9,7 @@ const idTypeSymb = Symbol(`idType`)
 
 export function successfullSaveOperation() {
   coloredBackgroundConsoleLog(`Save ran successfully.\n`, `success`)
-  globalThis[OrmStoreSymb].dbChangesObj = {}
+  OrmStore.store.dbChangesObj = {}
   ChangeLogger.scheduledFlush = false
 }
 
@@ -91,6 +92,7 @@ export function handleUpserts(tableName, classChangesObj, queryObj, paramIndex, 
   while (classInstances.length) {
     //@ts-ignore
     const [instanceId, instance] = classInstances.pop()
+    if (Object.keys(instance).length === 1) continue
     if (instance[newEntityInstanceSymb]) inserts.push(instance)
     else updates.push(instance)
   }
@@ -108,7 +110,7 @@ export function typeIdObjectKey(instanceId, idType) {
 function insertNewRows(newRows, tableName, queryObj, paramIndex, client) {
   /**@type {any}*/ const target = queryObj[tableName].insert = { queryStr: ``, params: [] }
   const snakedTableName = nonSnake2Snake(tableName)
-  const classWiki = globalThis[OrmStoreSymb].classWikiDict[tableName]
+  const classWiki = OrmStore.store.classWikiDict[tableName]
   const columns = Object.keys(classWiki.columns)
 
   if (classWiki.parent) queryObj[tableName].parent = classWiki.parent.className
@@ -134,12 +136,14 @@ function updateRows(updatedRows, tableName, queryObj, paramIndex, client) {
   const snakedTableName = nonSnake2Snake(tableName)
 
   for (const row of updatedRows) {
-    let queryStr = ``
-    let params = []
-
     const rowId = row.id
     delete row.id
     const updatedColumns = Object.entries(row)
+    //if (!updatedColumns.length) continue
+
+    let queryStr = ``
+    let params = []
+
     queryStr += `UPDATE ${snakedTableName} SET `
     for (const [columnName, val] of updatedColumns) {
       if (client === "postgresql") queryStr += `${nonSnake2Snake(columnName)} = $${paramIndex++}, `
@@ -166,7 +170,7 @@ export function organizeChangeObj(dbChanges, cteMap, client) {
 
     for (const [instanceId, entityInstanceChangeObj] of entityChangeObjects) {
 
-      const classWiki = globalThis[OrmStoreSymb].classWikiDict[className]
+      const classWiki = OrmStore.store.classWikiDict[className]
       let properties = Object.keys(entityInstanceChangeObj)
 
       if (classWiki.parent) {

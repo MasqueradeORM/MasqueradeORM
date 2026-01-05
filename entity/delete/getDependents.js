@@ -1,12 +1,12 @@
-import { OrmStoreSymb } from "../../misc/constants.js"
-import { DependentsFinalizationRegistry, ORM } from "../../ORM.js"
+import { OrmStore } from "../../misc/ormStore.js"
+import { DependentsFinalizationRegistry, ORM } from "../../ORM/ORM.js"
 import { aliasedFindWiki2QueryRes, parseFindWiki } from "../find/find.js"
 import { deproxifyScopeProxy, classWiki2ScopeProxy } from "../find/scopeProxies.js"
 import { postgresCreateProxyArray } from "../find/sqlClients/postgresFuncs.js"
 import { sqliteCreateProxyArray } from "../find/sqlClients/sqliteFuncs.js"
 
 export async function internalFind(dependentMap, relationalProps, searchedId) {
-    const { sqlClient, dbConnection, entities } = globalThis[OrmStoreSymb]
+    const { sqlClient, dbConnection, entities } = OrmStore.store
     const baseProxyMap = classWiki2ScopeProxy({ ...dependentMap })
     let findWiki = deproxifyScopeProxy(baseProxyMap)
     const eagerLoadObj = {}

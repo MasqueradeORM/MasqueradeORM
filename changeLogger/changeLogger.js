@@ -1,47 +1,26 @@
-import { OrmStoreSymb } from "../misc/constants.js"
+import { OrmStore } from "../misc/ormStore.js"
 import { handleRelationalChanges, handleUpserts, organizeChangeObj } from "./save.js"
 import { postgresSaveQuery } from "./sqlClients/postgres.js"
 import { sqliteSaveQuery } from "./sqlClients/sqlite.js"
 
 export class ChangeLogger {
-  static scheduledFlush = false
+    static scheduledFlush = false
     static flushChanges() {
-        const dbChangesObj = globalThis[OrmStoreSymb].dbChangesObj
+        const dbChangesObj = OrmStore.store.dbChangesObj
         if (!Object.keys(dbChangesObj).length || this.scheduledFlush) return
-        console.log("flush called")
-        // let success = false
         this.scheduledFlush = true
-        const func = async () => {
-            await ChangeLogger.save(dbChangesObj)
-            //  success = await save(dbChangesObj)
-            // if (success) this.scheduledFlush = false
-            // this[dbChangesObj] = {}
-            // if (success) this[dbChangesSymb] = {}
-        }
-
-
-
-        // setImmediate(func)
-        // console.log("setImmediate triggered")
-
-
-        // queueMicrotask(async () => {
-        //   console.log('in microtask')
-        //   success = await save(this[dbChangesSymb])
-        //   console.log(`success = ${success}`)
-        //   this.scheduledFlush = false
-        //   if (success) this[dbChangesSymb] = {}
-        // })
+        const func = async () => await ChangeLogger.save(dbChangesObj)
+        //queueMicrotask(func)
+         setImmediate(func)
     }
 
 
-    static async save(/**@type {any}*/ dbChanges = null) {
-        if (!dbChanges) dbChanges = globalThis[OrmStoreSymb].dbChangesObj
-        else if (!Object.keys(dbChanges).length) return false
-        else console.log("flush save")
+    static async save(/**@type {any}*/ dbChanges = undefined) {
+        if (!dbChanges) dbChanges = OrmStore.store.dbChangesObj
+        else if (!Object.keys(dbChanges).length) return
 
         let paramIndex = 1
-        const { sqlClient, dbConnection } = globalThis[OrmStoreSymb]
+        const { sqlClient, dbConnection } = OrmStore.store
         const deletedInstancesArr = dbChanges.deletedInstancesArr
         const deletedUncalledRelationsArr = dbChanges.deletedUncalledRelationsArr //this has to fire first
         if (deletedInstancesArr) delete dbChanges.deletedInstancesArr
@@ -69,6 +48,5 @@ export class ChangeLogger {
         if (sqlClient === "postgresql") await postgresSaveQuery(deletedUncalledRelationsArr, classesQueryObj, junctionsQueryObj, deletedInstancesArr, paramIndex, dbConnection)
         else sqliteSaveQuery(deletedUncalledRelationsArr, classesQueryObj, junctionsQueryObj, deletedInstancesArr, dbConnection)
     }
-
 }
 

@@ -1,6 +1,6 @@
 import { Alias, aliasSymb } from "../../../misc/classes.js"
-import { OrmStoreSymb } from "../../../misc/constants.js"
 import { nonSnake2Snake } from "../../../misc/miscFunctions.js"
+import { OrmStore } from "../../../misc/ormStore.js"
 import { proxyType, removeRelationFromUnusedRelations } from "../find.js"
 import { deproxifyScopeProxy, findPropOnScopeProxy, classWiki2ScopeObj } from "../scopeProxies.js"
 
@@ -52,7 +52,7 @@ function createFullAndFlatAliasObj(mapObj, fullFlatAliasObj = {}) {
 export function mergeRelationalWhereScope(proxyMap, relationalWhereFunc) {
     if (typeof relationalWhereFunc !== "function") throw new Error(`Relational where expects a function.`)
     let mapObj = deproxifyScopeProxy(proxyMap)
-    const classWiki = globalThis[OrmStoreSymb].classWikiDict[mapObj.className_]
+    const classWiki = OrmStore.store.classWikiDict[mapObj.className_]
     const relationalWhereMapProxy = createRelationalWhereProxy(mapObj, classWiki)
     relationalWhereFunc(relationalWhereMapProxy)
     mapObj = deproxifyScopeProxy(relationalWhereMapProxy)

@@ -1,7 +1,7 @@
 
 import { Alias, aliasSymb, SqlWhereObj } from "../../../misc/classes.js"
-import { OrmStoreSymb } from "../../../misc/constants.js"
 import { array2String, getType, nonSnake2Snake } from "../../../misc/miscFunctions.js"
+import { OrmStore } from "../../../misc/ormStore.js"
 import { removeRelationFromUnusedRelations } from "../find.js"
 import { classWiki2ScopeProxy } from "../scopeProxies.js"
 import { mergeRelationalWhereScope } from "./relationalWhere.js"
@@ -205,7 +205,7 @@ function nonRelationalWhereFunction2Statement(func, columnIdentity, whereObj) {
 
 export function mergeWhereScope(proxyMap, whereObj) {
     const entries = Object.entries(whereObj)
-    const classWikiDict = globalThis[OrmStoreSymb].classWikiDict
+    const classWikiDict = OrmStore.store.classWikiDict
     for (const [key, whereVal] of entries) {
 
         if (key === "_relationalWhere") {

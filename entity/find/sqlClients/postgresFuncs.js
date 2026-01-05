@@ -6,7 +6,7 @@ import { findColumnObjOnWiki } from "../find.js"
 import { junctionJoinCte, junctionJoinSelectedCte, parentJoin } from "../joins.js"
 
 export function postgresCreateProxyArray(queryResult, scopeObj, entitiesFuncArr, hadEagerLoading) {
-    if (queryResult.length === 0) return []
+    if (!queryResult || queryResult.length === 0) return []
 
     const proxyArr = []
     for (const row of queryResult) {

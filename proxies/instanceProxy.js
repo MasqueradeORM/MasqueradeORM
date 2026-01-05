@@ -1,16 +1,17 @@
 
 import { setMaxListeners } from 'events'
-import { newEntityInstanceSymb, OrmStoreSymb } from '../misc/constants.js'
+import { newEntityInstanceSymb } from '../misc/constants.js'
 import { fillCalledRelationsOnInstance, junctionProp2Wiki, getRelationalPropNames, traverseResultObjRelationalScope } from '../entity/find/find.js'
 import { postgresDbValHandling } from '../entity/find/sqlClients/postgresFuncs.js'
 import { sqliteDbValHandling } from '../entity/find/sqlClients/sqliteFuncs.js'
 import { LazyPromise } from '../misc/classes.js'
-import { FinalizationRegistrySymb, ORM } from '../ORM.js'
-import { coloredBackgroundConsoleLog, getPropertyClassification, js2dbTyping, nonSnake2Snake, postgres2sqliteQueryStr, snake2Pascal } from '../misc/miscFunctions.js'
+import { FinalizationRegistrySymb, ORM } from '../ORM/ORM.js'
+import { coloredBackgroundConsoleLog, getPropertyClassification, js2SqlTyping, nonSnake2Snake, postgres2sqliteQueryStr, snake2Pascal } from '../misc/miscFunctions.js'
 import { createNonRelationalArrayProxy } from './nonRelationalArrayProxy.js'
 import { createObjectProxy } from './objectProxy.js'
 import { createRelationalArrayProxy } from './relationalArrayProxy.js'
 import { ChangeLogger } from '../changeLogger/changeLogger.js'
+import { OrmStore } from '../misc/ormStore.js'
 setMaxListeners(577)
 
 
@@ -18,7 +19,7 @@ export function rowObj2InstanceProxy(resultObj, findWiki, Entities) {
     const className = findWiki.className
     const { nonRelationalProperties, relationalProperties, uncalledRelationalProperties } = getCategorizedClassProperties(findWiki)
 
-    const { entityMapsObj, sqlClient } = globalThis[OrmStoreSymb]
+    const { entityMapsObj, sqlClient } = OrmStore.store
     if (!entityMapsObj[className]) entityMapsObj[className] = new Map()
     let entityMap = entityMapsObj[className]
     const instanceOnLogger = searchEntityMap(resultObj, relationalProperties, entityMap)
@@ -47,7 +48,7 @@ export function rowObj2InstanceProxy(resultObj, findWiki, Entities) {
 
         for (const propertyName of nonRelationalProperties) {
             let value = resultObj[propertyName]
-            if (!value) {
+            if (value === null) {
                 instance[propertyName] = undefined
                 continue
             }
@@ -84,7 +85,7 @@ export function instanceProxyGetHandler(target, key, classWiki) {
     const val = target[key]
     if (!(val instanceof LazyPromise)) return val
 
-    const { sqlClient, dbConnection } = globalThis[OrmStoreSymb]
+    const { sqlClient, dbConnection } = OrmStore.store
     const [classification, joinedClassMap, mapWithProp] = getPropertyClassification(key, classWiki)
     let joinedTable
 
@@ -114,7 +115,8 @@ export function instanceProxyGetHandler(target, key, classWiki) {
     return promise
 }
 
-export function instanceProxySetHandler(target, key, value, eventListenersObj, classWiki, dbChangesObj) {
+export function instanceProxySetHandler(target, key, value, eventListenersObj, classWiki) {
+    const {dbChangesObj} = OrmStore.store
     let oldValue = target[key]
     if (value === null) value = undefined
     const entityClass = target.constructor.name
@@ -266,7 +268,7 @@ export function addEventListener2Proxy(listeningInstance, key, eventListenersObj
     if (!newListened2Proxy || !newListened2Proxy.id) return
 
     const newEventFunc = (event) => {
-        console.log(`Delete event received by ${listeningInstance.id}_${listeningInstance.constructor.name} on property '${key}' from ${newListened2Proxy.id}_${newListened2Proxy.constructor.name}`)
+        // console.log(`Delete event received by ${listeningInstance.id}_${listeningInstance.constructor.name} on property '${key}' from ${newListened2Proxy.id}_${newListened2Proxy.constructor.name}`)
         const id2delete = event.detail.id
         if (listeningInstance[key].id === id2delete) {
             listeningInstance[key] = undefined
@@ -332,7 +334,7 @@ export function createLazyLoadQueryStr(property, classWiki) {
     queryStr += `WHERE jt.${baseTableName}_id = $1;`
     queryStr = selectStr + queryStr
 
-    if (globalThis[OrmStoreSymb].sqlClient === "sqlite") queryStr = postgres2sqliteQueryStr(queryStr)
+    if (OrmStore.store.sqlClient === "sqlite") queryStr = postgres2sqliteQueryStr(queryStr)
     return queryStr
 }
 
@@ -369,7 +371,7 @@ export function createLazyPromise(target, key, queryRes, classWiki, isArrayOfIns
             const proxyArr = []
             for (const row of resultArr) {
                 const rowWithCamelCasedProps = Object.fromEntries(Object.entries(row).map(([key, val]) => [snake2Pascal(key, true), val]))
-                proxyArr.push(rowObj2InstanceProxy(rowWithCamelCasedProps, findWiki, globalThis[OrmStoreSymb].entities))
+                proxyArr.push(rowObj2InstanceProxy(rowWithCamelCasedProps, findWiki, OrmStore.store.entities))
             }
 
             if (isArrayOfInstances) {
@@ -396,7 +398,7 @@ export function uncalledPropertySetHandler(target, key, value, columnClassificat
     // }
     //todo check if is optional against a potentially undefined value
 
-    const { dbChangesObj, sqlClient } = globalThis[OrmStoreSymb]
+    const { dbChangesObj, sqlClient } = OrmStore.store
     const classChangeObj = dbChangesObj[target.constructor.name] ??= {}
     const instanceChangeObj = classChangeObj[target.id] ??= {}
     const { isArray, optional } = propertyTypeObj
@@ -418,7 +420,7 @@ export function uncalledPropertySetHandler(target, key, value, columnClassificat
     }
 
     const junctionTableName = `${nonSnake2Snake(nameOfClassWithProp)}___${nonSnake2Snake(key)}_jt`
-    const idType = js2dbTyping(sqlClient, mapWithProp.columns.id.type)
+    const idType = js2SqlTyping(sqlClient, mapWithProp.columns.id.type)
 
     const uncalledPropChangeObj = dbChangesObj.deletedUncalledRelationsArr ??= {}
     const junctionChangeArr = uncalledPropChangeObj[junctionTableName] ??= { idType, params: [] }
@@ -452,7 +454,7 @@ export function proxifyEntityInstanceObj(instance, uncalledRelationalProperties)
 
     if (instance === undefined || !instance.id) return instance
     const instanceClassName = instance.constructor.name
-    const { classWikiDict, dbChangesObj } = globalThis[OrmStoreSymb]
+    const { classWikiDict, dbChangesObj } = OrmStore.store
     const classWiki = classWikiDict[instanceClassName]
 
     if (!uncalledRelationalProperties) {
@@ -479,11 +481,11 @@ export function proxifyEntityInstanceObj(instance, uncalledRelationalProperties)
             return instanceProxyGetHandler(target, key, classWiki)
         },
         set: (target, /**@type {string}*/ key, value) => {
-            instanceProxySetHandler(target, key, value, eventListenersObj, classWiki, dbChangesObj)
+            instanceProxySetHandler(target, key, value, eventListenersObj, classWiki)
             return true
         },
         defineProperty: (target, /**@type {string}*/ key, definePropObj) => {
-            instanceProxySetHandler(target, key, definePropObj.value, eventListenersObj, classWiki, dbChangesObj)
+            instanceProxySetHandler(target, key, definePropObj.value, eventListenersObj, classWiki)
             return true
         }
     }

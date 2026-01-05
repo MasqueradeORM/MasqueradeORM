@@ -1,47 +1,28 @@
 import type { UUID } from "crypto"
 
-import { Entity } from "./entities/entity"
-import { Alias, SqlWhereObj } from "./ormClasses"
-import { OrArray, AndArray } from "./ormClasses"
-import { AND, OR } from "./entities/entityFunctions"
+import { Entity } from "../entity/entity"
+import { Alias, AND, OR } from "../entity/find/where/whereArgsFunctions"
+import { OrArray, AndArray, SqlWhereObj, LazyPromise } from "./classes"
 import type { Pool } from "pg"
 import { DatabaseSync } from "node:sqlite"
 
-export const OrmObjectSymb = Symbol("OrmObject")
+type integer = number
 
-export const OrmObject = {
-  [OrmObjectSymb]: true as const
-}
+type DbConnection<T extends 'pg' | 'sqlite'> =
+  T extends 'pg' ? Pool : DatabaseSync
 
 type OrmConfigObj = {
-  dbConnection: Pool | DatabaseSync
-  sqlClient: SqlClient
-  primaryType: DbPrimaryKey
+  dbConnection: Pool | DatabaseSync,
+  //dbConnection: DbConnection,
+  idTypeDefault: DbPrimaryKey,
+  skipTableCreation?: boolean
 }
-
-type TestJSON = {
-  theme: `Dark` | `Light`,
-  timezone: string,
-  browser: string,
-  readonly [OrmObjectSymb]?: true
-}
-
-type UserSettings = {
-  darkTheme: boolean,
-  sendNotifications: boolean
-}
-
-type TEST = UserSettings & object
-
 
 type ConsoleLogType = "success" | "failure" | "warning"
-
-type COLUMN_TYPE = "TEXT" | "INT" | "BOOLEAN" | "TIMESTAMPTZ" | "JSONB" | "UUID"
 
 type ColumnBase = {
   nullable?: boolean
   unique?: boolean
-  // primary?: boolean
 }
 
 type ColumnTypeMap = {
@@ -114,9 +95,6 @@ type ValidColumnKeysArr<T> = {
   : never
 }[keyof T]
 
-// type AliasMap<T> = {
-//   [K in ValidColumnKeys<T> | ValidColumnKeysArr<T>]: string
-// }
 
 type ColumnProperties<T> = Partial<{
   [K in ValidColumnKeys<T>]:
@@ -176,12 +154,6 @@ type ColumnPropertiesArr<T> = Partial<{
   : never
 }>
 
-// type RelationsWhere<T> = {
-//   [K in RelationsProperties<T>]: NonNullable<T[K]> extends Array<infer C>
-//   ? WhereProperties<NonNullable<C>> | sqlArrowFn<NonNullable<C>>
-//   : WhereProperties<NonNullable<T[K]>> | sqlArrowFn<NonNullable<T[K]>>
-// }
-
 
 type WhereProperties<T> =
   ColumnProperties<T> &
@@ -202,7 +174,7 @@ type EnhancedWhereProperties<T> = WhereProperties<T> & {
 // 🔑SQL
 // ---------------------------------------------------------
 
-type sqlArrowFn<T> = (AliasObj: AliasObj<T>) => SqlWhereObj<PrimitivesNoNull | AliasObj>
+type sqlArrowFn<T> = (AliasObj: AliasObj<T>) => SqlWhereObj<PrimitivesNoNull | AliasObj<T>>
 
 type sqlArrowFnTable<T> = (AliasObj: AliasObj<T>) => SqlWhereObj<any>
 
@@ -242,12 +214,8 @@ type JSONValue =
   | boolean
   | null
   | undefined
-  | OrmJSON
   | JSONValue[]
 
-type OrmJSON = {
-  [key: string]: JSONValue
-}
 
 type SqlClient = "postgresql" | "sqlite"
 

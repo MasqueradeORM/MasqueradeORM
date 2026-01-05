@@ -32,9 +32,9 @@ propertyName?: string // or propertyName: string | undefined
 #### 3) Making a Table Column Unique:
 
 ```ts
-import type { Unique } from "masquerade"
 propertyName: string | Unique
 ```   
+(you can import Unique from the package or just define ```type Unique = never```)
 
 #### 4) Relational Properties
 Assuming we have the following classes extending Entity: User, Chat and Message.    
@@ -42,25 +42,25 @@ Assuming we have the following classes extending Entity: User, Chat and Message.
 ```ts
 class Example {
     // one-to-one relationship with a User instance
-    user: User
+    prop1: User
 
     // one-to-one relationship with a User instance,
     // but may be undefined if no relationship is established yet
-    optionalUser?: User
+    prop2?: User
 
     // one-to-many relationship with Message instances
-    messages: Message[]
+    prop3: Message[]
 
     // one-to-many relationship with Chat instances,
     // but may be undefined if no relationships are established yet
-    optionalChats?: Chat[]
+    prop4?: Chat[]
 }
 ```
 Each relational property will create a junction table named `className___propName_jt`.
 
 #### 5) Static ormClassSettings_ Property:
 ```ts
-Static ormClassSettings_ = {idType: 'UUID' } // | 'INT' | 'BIGINT'
+Static ormClassSettings_ = {idType: 'UUID' | 'INT' | 'BIGINT'} // or {idTypeDefault: 'UUID' | 'INT' | 'BIGINT'}
 ``` 
 
 The above code lets you override the default id type that is assigned to all Entity's descendants (this will be elaborated on in the next section).    
@@ -82,7 +82,8 @@ const yourDbConnection = new DatabaseSync('your-db-name')
 **Postgresql**
 
 ```ts
-import { Pool } from 'pg'
+import pkg from 'pg'
+const { Pool } = pkg
 
 // Create a pool instance
 const yourDbConnection = new Pool({
@@ -105,7 +106,7 @@ const ormConfig: OrmConfigObj = {
   }
 ```
 
-primaryType sets the default id type on all classes, which can be overridden as explained in **'Defining Classes' - section 5**.
+idTypeDefault sets the default id type on all classes, which can be overridden as explained in **'Defining Classes' - section 5**.
 
 #### 3-a) Build Step - Webpack:
 ```js

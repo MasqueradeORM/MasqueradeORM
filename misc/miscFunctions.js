@@ -27,21 +27,21 @@ export function postgres2sqliteQueryStr(queryString) {
     return queryString.replace(/\$\d+/g, '?')
 }
 
-export function js2dbTyping(sqlClient, /**@type {string | undefined}*/ type = undefined) {
+export function js2SqlTyping(sqlClient, /**@type {string | undefined}*/ type = undefined) {
     if (!type) return js2db[sqlClient]
     return js2db[sqlClient][type]
 }
 
 
 export function postgres2JsTyping(value, columnTypeObj) {
-    if (!value) return undefined
+    if (value === null || value === undefined) return undefined
     const type = columnTypeObj.type
     if (type === 'bigint') return BigInt(value)
     else return value
 }
 
 export function sqlite2JsTyping(value, columnTypeObj) {
-    if (!value) return undefined
+    if (value === null || value === undefined ) return undefined
     const type = columnTypeObj.type
     if (columnTypeObj.isArray || type === 'object' || type === 'OrmJSON') return JSON.parse(value)
     else if (type === 'bigint') return BigInt(value)
