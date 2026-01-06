@@ -77,8 +77,8 @@ export class TestChat extends Entity {
 
 /**@typedef {import('masquerade').integer} integer */
 export class Product extends Entity {
-	/**@type {number}*/ price
-	/**@type {integer}*/ itemsInStock
+	/**@type {number}*/ price // maps to float column
+	/**@type {integer}*/ itemsInStock // maps to integer column
 
 	constructor (price, itemsInStock) {
 		this.price = price
@@ -88,72 +88,72 @@ export class Product extends Entity {
 ```
 
 ```js
-	// Handling a new chat message
-	const { chatId, senderId, messageContent } = requestParams
+// Handling a new chat message
+const { chatId, senderId, messageContent } = requestParams
 
-	// Find a chat with the provided chatId, ensure that 
-	// the message sender is an actual user of the chat, 
-	// and eagerly-load the messages of the chat to add the new sent message.
-	const chat = await Chat.find({
-		relations: {
-			messages: true
-		},
-		where: {
-			id: chatId,
-			users: { id: senderId } 
-		}
-	})[0]
-
-	if (!chat) {
-		console.log("Chat not found or user is not a valid user of chat.")
-		return
-	} 
-
-	const newMessage = new Message(senderId, messageContent, new Date()) // new row added to the message table.
-	chat.messages.push(newMessage) // new message is associated with the chat.
-	console.log("Request fulfilled successfully.")
-```
-
-```js
-	// Adding new chat admin
-	const { chatId, requestingAdminId, newAdminId } = requestParams
-
-	// Find a chat with the provided chatId, ensure the requesting user is an admin (based on adminIds in chatSettings),
-	// and confirm that the newAdminId is a user in the chat.
-	const chat = await Chat.find({
-		where: {
-			id: chatId,
-			chatSettings: sql`json_extract(#, '$.adminIds') LIKE '%"${requestingAdminId}"%'`,
-			users: { id: newAdminId }
-		}
-	})[0] 
-
-	if (!chat) {
-		console.log("Bad Request")
-		return
+// Find a chat with the provided chatId, ensure that 
+// the message sender is an actual user of the chat, 
+// and eagerly-load the messages of the chat to add the new sent message.
+const chat = await Chat.find({
+	relations: {
+		messages: true
+	},
+	where: {
+		id: chatId,
+		users: { id: senderId } 
 	}
+})[0]
 
-	chat.chatSettings.adminIds.push(newAdminId) 
-	// 'chatSettings' object will be updated in db to include the new admin
-	console.log("Request fulfilled successfully.")
+if (!chat) {
+	console.log("Chat not found or user is not a valid user of chat.")
+	return
+} 
+
+const newMessage = new Message(senderId, messageContent, new Date()) // new row added to the message table.
+chat.messages.push(newMessage) // new message is associated with the chat.
+console.log("Request fulfilled successfully.")
 ```
 
 ```js
-	// User registration
-	const { username, email, password } = requestParams
+// Adding new chat admin
+const { chatId, requestingAdminId, newAdminId } = requestParams
 
-	const uniqueCheck = await User.find({
+// Find a chat with the provided chatId, ensure the requesting user is an admin (based on adminIds in chatSettings),
+// and confirm that the newAdminId is a user in the chat.
+const chat = await Chat.find({
+	where: {
+		id: chatId,
+		chatSettings: sql`json_extract(#, '$.adminIds') LIKE '%"${requestingAdminId}"%'`,
+		users: { id: newAdminId }
+	}
+})[0] 
+
+if (!chat) {
+	console.log("Bad Request")
+	return
+}
+
+chat.chatSettings.adminIds.push(newAdminId) 
+// 'chatSettings' object will be updated in db to include the new admin
+console.log("Request fulfilled successfully.")
+```
+
+```js
+// User registration
+const { username, email, password } = requestParams
+
+const uniqueCheck = await User.find({
 	relationalWhere: (user) => sql`${user.username} = ${username} OR ${user.email} = ${email}`
-	})
+})
 
-	if (uniqueCheck.length) {
-		console.log("Username or email is already taken.")
-		return
-	} 
+if (uniqueCheck.length) {
+	console.log("Username or email is already taken.")
+	return
+} 
 
-	const hashedPassword = await bcrypt.hash(password, 10)
-	const newUser = new User(username, email, hashedPassword) // user is saved implicitly
-	console.log("Request fulfilled successfully.")
+const hashedPassword = await bcrypt.hash(password, 10)
+const newUser = new User(username, email, hashedPassword) // user is saved implicitly
+console.log("Request fulfilled successfully.")
 ```
 
 # Further Reading
@@ -162,6 +162,7 @@ export class Product extends Entity {
 - **[Getting Started - Typescript](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/getting-started-Typescript.md#class-definitions)**
 - **[Find Method](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/find.md#find)**
 - **[Saving to the Database](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/saving-to-database.md#saving-to-the-database)**
+- **[Managing the Database](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/managing-the-database.md)**
 
 
 

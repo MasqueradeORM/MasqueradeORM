@@ -1,9 +1,7 @@
 export {ORM} from "./ORM/ORM.js"
 export {Entity} from './entity/entity'
-export { DbManager } from "./ORM/DbManager.js"
+export {DbManager} from "./ORM/DbManager.js"
 export {sql, AND, OR} from "./entity/find/where/whereArgsFunctions"
-export { MasqueradePlugin } from "./webpack/plugin.js"
+export {MasqueradePlugin} from "./webpack/plugin.js"
 export {Unique, integer} from './misc/types.js'
 export {OrmConfigObj} from './misc/types.js'
-export {ChangeLogger} from "./changeLogger/changeLogger"
-// export {ChangeLogger} from "./changeLogger/changeLogger"
