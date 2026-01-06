@@ -133,7 +133,8 @@ export class Product extends Entity {
 		return
 	}
 
-	chat.chatSettings.adminIds.push(newAdminId) // 'chatSettings' object will be updated in db to include the new admin
+	chat.chatSettings.adminIds.push(newAdminId) 
+	// 'chatSettings' object will be updated in db to include the new admin
 	console.log("Request fulfilled successfully.")
 ```
 
