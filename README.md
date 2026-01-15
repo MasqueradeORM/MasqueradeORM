@@ -30,8 +30,8 @@ MasqueradeORM currently supports the following SQL clients:
 # Features
 - **Effortless setup** - no ORM-specific structures; just use your classes.
 - **Zero schema planning** - tables and schema are generated automatically.
-- **Powerful IntelliSense** - Confidently build complex queries with real-time IDE feedback when something’s wrong.
-- **Minimal memory usage** - One class instance per database row, minimizing memory usage and avoiding duplicates through smart state management.
+- **Powerful IntelliSense** - confidently build complex queries with real-time IDE feedback when something’s wrong.
+- **Minimal memory usage** - one class instance per database row, minimizing memory usage and avoiding duplicates through smart state management.
 - **Optimized querying** - fewer queries through intelligent transaction grouping without sacrificing data integrity.
 - **Relational WHERE clauses** - easily write conditions that compare two columns within the same table or columns across different tables.
 - **Write complex WHERE conditions using a template-literal helper** - enabling expressive comparisons like >=, LIKE, object-property access, and even array element matching, all without cluttering your query code.
