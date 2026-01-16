@@ -4,7 +4,7 @@
 await ExampleClass.find(findObj)
 ```
 
-The find method is the most complex part of the ORM - **IntelliSense is your friend.**
+The `find` method is the most complex part of the ORM. **Fortunately, it is fully covered by IntelliSense, and you are strongly encouraged to rely on it.**
 
 It accepts a single argument, findObj, which contains three optional fields.
 Because all fields are optional, findObj itself may be an empty object (although this is rarely useful, as it would return all instances of ExampleClass).
@@ -15,7 +15,6 @@ The three optional fields are:
 - where
 - relationalWhere
 
-**Note: findObj is fully covered by IntelliSense. You are strongly encouraged to rely on it.**
 
 
 ## The `relations` Field:
