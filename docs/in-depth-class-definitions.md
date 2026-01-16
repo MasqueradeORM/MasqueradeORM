@@ -149,7 +149,7 @@ At the moment, this is the only class setting supported, but it may evolve in th
 
 ## 3) Abstract Classes
 
-### How to Create an Abstract Class When Using JSDoc:
+### How to create an `abstract class` when using JSDoc?
 Put the decorator `/**@abstract*/` right above the constructor of the class.   
 ```js
 import { Entity } from 'masquerade'
