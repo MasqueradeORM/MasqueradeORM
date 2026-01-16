@@ -238,7 +238,7 @@ const users = await User.find({where: {metadata: sql`_CONDITION_STRING_FROM_BELO
 // 'sessions' find 
 const users = await User.find({where: {sessions: sql`_CONDITION_STRING_FROM_BELOW_`}})
 
-// **if not specified, the default is the 'metadata' find ()
+// **if not specified, the default is the 'metadata' find
 ```
 
 **Condition String Table**
