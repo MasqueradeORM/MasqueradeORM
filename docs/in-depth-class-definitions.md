@@ -94,7 +94,7 @@ const newInstance = new ExampleClass()
 // The objects need assigment, not mutation.
 newInstance.json.stringArr.push('d') 
 newInstance.jsonArr.stringArr.push('d')
-// This mutation IS an assigment, but it is
+// The below mutation IS an assigment, but it is
 // nested, and therefore will also not be persisted.
 newInstance.json.nestedObj.someProp = 'hola mundo'
 
