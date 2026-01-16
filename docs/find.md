@@ -232,24 +232,24 @@ class User extends Entity {
 Assuming we are writing the condition for the column/property `metadata` like so:
 ```ts
 import { sql } from "masquerade"
-
+// 'metadata' find
 const users = await User.find({where: {metadata: sql`_CONDITION_STRING_FROM_BELOW_`}})
 
-// *for sessions* corresponds to the conditional of
+// 'sessions' find 
 const users = await User.find({where: {sessions: sql`_CONDITION_STRING_FROM_BELOW_`}})
 
-// **if not specified, the default is the 'metadata' find
+// **if not specified, the default is the 'metadata' find ()
 ```
 
 **Condition String Table**
 
 | Operation    | SQLite      | PostgreSQL   |
 |-------------|---------------|------------|
-Array length | **for metadata** <br> `json_array_length(json_extract(#, '$.roles')) > 2` <br> **for sessions** <br> `json_array_length(json_extract(#)) > 2` | **for metadata** <br> `jsonb_array_length(#->'roles') > 2` <br> **for sessions** <br> `jsonb_array_length(#) > 2`|
-| Access index `i` of array   | **for metadata** <br>`json_extract(#, '$.roles[i]') = 'admin'`<br> **for sessions** <br>`json_extract(#, '$[i]') = 'SOME_SESSION_ID'` | **for metadata** <br>`#->'roles'->>i = 'admin''`<br> **for sessions** <br>`#->>i = 'admin'` |
+Array length | **'metadata' find** <br> `json_array_length(json_extract(#, '$.roles')) > 2` <br> **'sessions' find** <br> `json_array_length(json_extract(#)) > 2` | **'metadata' find** <br> `jsonb_array_length(#->'roles') > 2` <br> **'sessions' find** <br> `jsonb_array_length(#) > 2`|
+| Access index `i` of array   | **'metadata' find** <br>`json_extract(#, '$.roles[i]') = 'admin'`<br> **'sessions' find** <br>`json_extract(#, '$[i]') = 'SOME_SESSION_ID'` | **'metadata' find** <br>`#->'roles'->>i = 'admin''`<br> **'sessions' find** <br>`#->>i = 'admin'` |
 | Check if array contains a value | `json_extract(#, '$.roles') LIKE '%"admin"%'` | `#->'roles' @> '["admin"]'::jsonb` |
 Check nested field | `json_extract(#, '$.preferences.theme') = 'dark'` | `#->'preferences'->>'theme' = 'dark'` |
-| 
+ 
 
 
 <br>
