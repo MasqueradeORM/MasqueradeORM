@@ -22,7 +22,7 @@ export function createConfigObj(client) {
     }
 }
 
-export async function initPostgresDb(configObj, ...classes) {
+export async function initORM(configObj, ...classes) {
     await ORM.javascriptBoot(configObj, ...classes)
 }
 
