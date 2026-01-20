@@ -2,17 +2,17 @@
 import test from 'node:test'
 import assert from "node:assert"
 import * as classes from './testing-classes.js'
-import { resetPostgresDb, initPostgresDb, createConfigObj } from "./testInit.js"
+import { resetPostgresDb, initORM, createConfigObj } from "./testInit.js"
 import { sql } from '..//src/entity/find/where/whereArgsFunctions.js'
 import { generateFamiliesAndHouses } from "./generationFuncs.js"
 import { validateUpdatedAt } from "./miscFunctions.js"
 import { OrmStore } from '../src/misc/ormStore.js'
 
-const { House, Person, NonRelationalClass, NonRelationalClass2 } = classes
+const { House, Person, NonRelationalClass2 } = classes
 
 const configObj = createConfigObj()
 await resetPostgresDb(configObj.dbConnection)
-await initPostgresDb(configObj, classes)
+await initORM(configObj, classes)
 let dbChanges = OrmStore.store.dbChangesObj
 generateFamiliesAndHouses()
 for (let i = 0; i < 3; i++) new NonRelationalClass2()
@@ -153,7 +153,7 @@ test('test 2 - promises and instance logging', async (t) => {
     firstRelationalTest.tenants = [mrClean, new Person('Mrs Clean', 24)]
 
     firstRelationalTest = (await House.find({ where: { id: 1 } }))[0]
-    await initPostgresDb(configObj, classes)
+    await initORM(configObj, classes)
 
     firstRelationalTest = (
       await House.find({
@@ -221,7 +221,7 @@ test('test 3 - deletion', async (t) => {
   await t.test('deletion events - 1-to-1 relation', async () => {
     await father?.delete()
     await House.find({})
-    await initPostgresDb(configObj, classes)
+    await initORM(configObj, classes)
 
     house = (await House.find({
       relations:

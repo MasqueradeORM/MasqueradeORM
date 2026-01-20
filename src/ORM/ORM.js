@@ -81,10 +81,10 @@ async function universalBoot(classDict, classFuncs, /**@type {OrmConfigObj}*/ co
   classDict.entity = returnEntityClassObj()
   OrmStore.store.entities = classFuncs
   addChildrenToClasses(classDict)
+  handleSpecialSettingId(classDict)
   const branchesArr = createBranches(classDict)
   const tablesDict = createTableObject(branchesArr)
   createJunctionColumnContext(tablesDict)
-  handleSpecialSettingId(tablesDict)
   createClassMap(tablesDict) //JUNCTIONS MAY NOT EXIST ON ORM MAP, BUT COLUMNS ALWAYS WILL
   await compareAgainstDb(tablesDict)
   await getInitIdValues(tablesDict)

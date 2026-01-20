@@ -5,7 +5,7 @@ The ORM does not support soft deletion by default. To implement soft deletion, j
 
 **TypeScript**
 ```ts
-abstract class SoftDel extends Entity {
+export abstract class SoftDel extends Entity {
   isDeleted: boolean = false
 
     constructor() {
@@ -13,7 +13,7 @@ abstract class SoftDel extends Entity {
     }
 }
 
-abstract class SoftDelUUID extends Entity {
+export abstract class SoftDelUuid extends Entity {
   // switch 'UUID' to 'INT' or 'BIGINT' as needed.
   static ormClassSettings_ = { idType: 'UUID' } 
   isDeleted: boolean = false
@@ -26,7 +26,7 @@ abstract class SoftDelUUID extends Entity {
 
 **JavaScript**
 ```js
-class SoftDel extends Entity {
+export class SoftDel extends Entity {
   /**@type {boolean}*/ isDeleted = false
 
   /** @abstract */
@@ -35,7 +35,7 @@ class SoftDel extends Entity {
   }
 }
 
-class SoftDelUUID extends Entity {
+export class SoftDelUuid extends Entity {
   // switch 'UUID' to 'INT' or 'BIGINT' as needed.
   static ormClassSettings_ = { idType: 'UUID' }
   /**@type {boolean}*/ isDeleted = false
@@ -47,10 +47,10 @@ class SoftDelUUID extends Entity {
 }
 ```
 
-Now, every class that extends these `SoftDel` classes will have a boolean property `isDeleted` that is `false` by default, allowing instances to be soft-deleted by setting the `isDeleted` value to `true`.
+Every class that extends these `SoftDel` classes will have a boolean property `isDeleted` that is `false` by default, allowing instances to be soft-deleted by setting the `isDeleted` value to `true`.
 
 ```ts
-class SoftDeletableUser extends SoftDelUUID {
+export class SoftDeletableUser extends SoftDelUuid {
   username: string
   email: string
   password: string
@@ -66,6 +66,8 @@ const softDelUser = new SoftDeletableUser('JohnDoe', 'JohnDoe@gmail.com', 'hashe
 // softDelUser has an 'isDeleted' property that can be toggled to true for soft deletion
 // and has an id type of UUID.
 ```
+
+**Note:** Unlike `Entity`, the `SoftDel` classes need to be passed into the `ORM.boot` method that is being called to init the ORM.
 
 ### Hard Deletion
 
@@ -167,7 +169,7 @@ for (const dependentClassName of Object.keys(dependentsDict)) {
   for (const instance of dependentInstances) {
     dependentProps.forEach(prop => {
       if (instance[prop].id !== deletedUserId) continue
-      // your decoupling logic here...
+      // decoupling logic here...
     })
   }
 }

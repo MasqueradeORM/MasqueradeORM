@@ -273,7 +273,7 @@ export function fillClassObjColumns(classObj, entityNamesArr) {
                 }
             }
 
-            if (node.name.expression && node.name.expression.escapedText === "ormClassSettings_") {
+            if ((node.name.expression && node.name.expression.escapedText === "ormClassSettings_") || (node.name.escapedText === "ormClassSettings_")) {
                 propertyName = "ormClassSettings_"
 
                 if (!isStatic) {
@@ -407,22 +407,24 @@ export function createBranches(classDict) {
 }
 
 export function inheritColumns(inheritingClass) {
-    let classObj = inheritingClass
+    let iterativeClassObj = inheritingClass
     let parent
 
-    while (classObj.parent) {
-        parent = classObj.parent
+    while (iterativeClassObj.parent) {
+        parent = iterativeClassObj.parent
         if (!parent.abstract) {
-
-            inheritingClass.columns.unshift({})
             const { columns } = returnEntityClassObj()
             const [id, updatedAt] = columns
-            inheritingClass.columns[0] = id
-            inheritingClass.tableIdTypeInDb = id.type
+            inheritingClass.columns.unshift(id)
             return parent
         }
+
         inheritingClass.columns.push(...parent.columns)
-        classObj = parent
+        if (iterativeClassObj.specialSettings && iterativeClassObj.specialSettings.idType) {
+            const index = inheritingClass.columns.find(columnObj => columnObj.name === 'id')
+            inheritingClass.columns[index] = idType2IdColumnObj(iterativeClassObj.specialSettings.idType)
+        }
+        iterativeClassObj = parent
     }
 }
 
@@ -584,7 +586,11 @@ export function formatForCreation(tablesDict) {
             junctions: []
         }
 
-        if (tableObj.parent) formattedTable.parent = tableObj.parent.name
+        if (tableObj.parent && tableObj.parent.name !== 'entity') {
+            let currentParent = tableObj.parent
+            while (currentParent.abstract && currentParent.parent) currentParent = currentParent.parent
+            if (currentParent.name !== 'entity') formattedTable.parent = tableObj.parent.name
+        }
 
         for (const columnObj of Object.values(tableObj.columns)) {
             if (columnObj.relational) formattedTable.junctions?.push(formatRelationalColumnObj(tableObj, columnObj, tablesDict, sqlClient))
@@ -684,8 +690,7 @@ export function columnEntries2QueryStr(columnEntries) {
 }
 
 export function sqlTypeTableObj(tableObj, sqlClient) {
-    if (tableObj.parent === `entity`) delete tableObj.parent
-
+    //if (tableObj.parent === `entity`) delete tableObj.parent
     const columnObjectsArr = Object.values(tableObj.columns)
 
     if (sqlClient === `postgresql`) {
@@ -749,12 +754,10 @@ export async function sendTableCreationQueries(tableCreationObj) {
     }
 
     const tableQueryObjectsEntries = Object.entries(tableCreationObj.tableQueryObject)
-    coloredBackgroundConsoleLog(`Updating database tables...\n`, `success`)
+    coloredBackgroundConsoleLog(`Updating database schema...\n`, `success`)
     for (const [tableName, queryObj] of tableQueryObjectsEntries) await sendQueryFromQueryObj(queryObj, queryFuncWithTryCatch)
     for (const query of tableCreationObj.junctionQueriesArr) await queryFuncWithTryCatch(query)
 }
-
-
 
 
 export function produceQueryObj(rootTable, tableQueryObject, childrenTables, junctionQueriesArr) {
@@ -775,25 +778,25 @@ export function produceQueryObj(rootTable, tableQueryObject, childrenTables, jun
 
 export function handleSpecialSettingId(tablesDict) {
     for (const classObj of Object.values(tablesDict)) {
-        if (classObj.parent.name === 'entity' && classObj.specialSettings && classObj.specialSettings.idType) {
+        if (classObj.parent === 'entity' && classObj.specialSettings && classObj.specialSettings.idType) {
             const settingsObj = classObj.specialSettings
             const specialIdType = settingsObj.idType
             let idObj = idType2IdColumnObj(specialIdType)
             classObj.columns.id = idObj
-            if (classObj.children) changeIdColumnOnChildren(idObj, tablesDict, classObj.children)
+            // if (classObj.children) changeIdColumnOnChildren(idObj, tablesDict, classObj.children)
         }
     }
 }
 
-export function changeIdColumnOnChildren(idObj, classesObj, childrenNameArr) {
-    const nextChildrenNameArr = []
-    for (const childName of childrenNameArr) {
-        const childObj = classesObj[childName]
-        childObj.columns.id = idObj
-        if (childObj.children) nextChildrenNameArr.push(...childObj.children)
-    }
-    if (nextChildrenNameArr.length) changeIdColumnOnChildren(idObj, classesObj, nextChildrenNameArr)
-}
+// export function changeIdColumnOnChildren(idObj, classesObj, childrenNameArr) {
+//     const nextChildrenNameArr = []
+//     for (const childName of childrenNameArr) {
+//         const childObj = classesObj[childName]
+//         childObj.columns.id = idObj
+//         if (childObj.children) nextChildrenNameArr.push(...childObj.children)
+//     }
+//     if (nextChildrenNameArr.length) changeIdColumnOnChildren(idObj, classesObj, nextChildrenNameArr)
+// }
 
 export function idType2IdColumnObj(idType) {
     let idColumnObj
