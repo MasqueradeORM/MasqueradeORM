@@ -27,6 +27,13 @@ MasqueradeORM currently supports the following SQL clients:
 - **SQLite** 
 - **Postgresql**
 
+
+# Installation
+
+```bash
+npm install masquerade-orm
+```
+
 # Features
 - **Effortless setup** - no ORM-specific structures; just use your classes.
 - **Zero schema planning** - tables and schema are generated automatically.
