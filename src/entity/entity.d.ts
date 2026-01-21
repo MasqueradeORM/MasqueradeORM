@@ -1,4 +1,5 @@
-import { FindObj } from "../misc/types"
+
+import type { FindObj } from "../misc/types"
 
 export declare class Entity {
   id: string | number | bigint
@@ -37,9 +38,9 @@ export declare class Entity {
 }
 
 
-type DependentsDict<T extends Entity> = {
+type DependentsDict = {
   [key: string]: [
-    dependentInstances: T[],
+    dependentInstances: any[],
     dependentProps: string[]
   ]
 }

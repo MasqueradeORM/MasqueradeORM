@@ -63,7 +63,7 @@ export class User extends Entity {
     password: string
     createdAt: Date = new Date()
     friendList: User[] = []
-    settings: UserSettings = {
+    settings: UserSettings & object = {
         locale: "en",
         theme: "system",
         twoStepVerification: false
@@ -123,8 +123,8 @@ user.friendList.pop()
 
 # Further Reading
 
-- **[Getting Started - Javascript](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/getting-started-Javascript.md#class-definitions)**
-- **[Getting Started - Typescript](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/getting-started-Typescript.md#class-definitions)**
+- **[Getting Started - Javascript](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/getting-started-javascript.md#class-definitions)**
+- **[Getting Started - Typescript](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/getting-started-typescript.md#class-definitions)**
 - **[Find Method](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/find.md#find)**
 - **[Saving to Database](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/saving-to-database.md#saving-to-the-database)**
 - **[Deleting Instances from the Database](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/deletion.md)**

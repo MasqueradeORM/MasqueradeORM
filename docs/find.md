@@ -88,7 +88,7 @@ await Chat.find({
 ```
 Translation: **“Find all chats that contain a message from a user with the id 12, without loading messages.“**     
 
-- **note:** The scope of the `where` condtions is agnostic to the scope of the `relations` (eager-loading).       
+- **Note:** The scope of the `where` condtions is agnostic to the scope of the `relations` (eager-loading).       
 It is completely safe to filter based on specific relations without having said relations passed into the `relations` field.      
 
 ### Introduction to the `sql`, `OR` and `AND`  functions 
@@ -173,7 +173,7 @@ const completedOrders = await Order.find({
 })
 ```
 
-- **note:** for SQL-client specific guide for writing `WHERE` conditions involving JSON and array data, go to the bottom of this page or click **[here](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/find.md#array-and-json-where-conditions-guide)**.
+- **Note:** for SQL-client specific guide for writing `WHERE` conditions involving JSON and array data, go to the bottom of this page or click **[here](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/find.md#array-and-json-where-conditions-guide)**.
 
 
 ## The `relationalWhere` Field:

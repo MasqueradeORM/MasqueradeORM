@@ -1,5 +1,4 @@
 import type { UUID } from "crypto"
-
 import { Entity } from "../entity/entity"
 import { Alias, AND, OR } from "../entity/find/where/whereArgsFunctions"
 import { OrArray, AndArray, SqlWhereObj, LazyPromise } from "./classes"
@@ -10,6 +9,10 @@ type integer = number
 
 type DbConnection<T extends 'pg' | 'sqlite'> =
   T extends 'pg' ? Pool : DatabaseSync
+
+type SqlClient = "postgresql" | "sqlite"
+
+type DbPrimaryKey = "UUID" | "INT" | "BIGINT"
 
 type OrmConfigObj = {
   dbConnection: Pool | DatabaseSync,
@@ -217,9 +220,6 @@ type JSONValue =
   | JSONValue[]
 
 
-type SqlClient = "postgresql" | "sqlite"
-
-type DbPrimaryKey = "UUID" | "INT" | "BIGINT"
 
 type PlainObject = { [k: string]: Primitives }
 

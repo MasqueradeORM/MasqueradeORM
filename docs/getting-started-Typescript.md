@@ -92,19 +92,21 @@ To manually set the id-type on a class, read **[Defining Classes: In-Depth - Cha
 
 ## 3) Build Step
 
-### A) Without Webpack:  
+### A) Universal Build Step:  
 
-First run ```bash npx orm-ts-setup``` in your terminal before your compile step. Then, compile and import ```Setup4Typescript``` into your entry point, and run it before the boot method (shown below in **section 4**).    
+First run ```bash npx orm-ts-setup``` in your terminal before your compile step. Then, compile and import ```UniversalTsSetup``` into your entry point, and run it before the boot method. Detailed example below in **[Section 4](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/getting-started-Typescript.md#4-boot-orm)**.    
+
+
 
 **Note:**  
-Whenever you make changes to classes that descend from `Entity`, `Setup4Typescript` must be rebuilt or updated.  
-To prevent the ORM from being out of sync with the actual classes passed in, it is recommended to combine `npx orm-ts-setup` with your build step.  
+Any changes to classes that are descendents of `Entity` require `UniversalTsSetup` to be rebuilt.
+To keep the ORM in sync with your entity definitions, include `npx orm-ts-setup` in your build step.
 
 **Example:** ```bash
 npx orm-ts-setup && tsc```
 
 
-### B) Using Webpack:
+### B) Webpack Build Step:
 ```js
 // in your webpack.config file add:
 import { MasqueradePlugin } from './plugin.js'
@@ -127,6 +129,7 @@ import { MasqueradePlugin } from './plugin.js'
 //other fields
 ```
 
+**Note:** The universal build step will work for projects using webpack as well.
 
 ## 4) Boot ORM:
 
@@ -134,9 +137,9 @@ import { MasqueradePlugin } from './plugin.js'
 import * as classes from "./classes"
 import * as moreClasses from "./moreClasses"
 import { SomeClass } from "./aSingleClass"
-if (usingWebpack) {
-import { Setup4Typescript } from "some/path"
-Setup4Typescript()
+if (!usingWebpack) {
+import { UniversalTsSetup } from "some/path/ormTypeScriptSetup"
+UniversalTsSetup()
 }
 await ORM.typescriptBoot(ormConfig, classes, moreClasses, someClass)
 ```

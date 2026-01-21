@@ -27,14 +27,14 @@ class ExampleClass extends Entity {
         ]
 
     // Can use `satisfies` instead
-    json: MyJSON = {
+    json: MyJSON & object = {
         booleanField: false,
         stringArr: ['a', 'b', 'c'],
         nestedObj: {}
     }
 
     // Can use `satisfies` instead
-    jsonArr: MyJSON[] = [
+    jsonArr: (MyJSON & object)[] = [
         {
             booleanField: false,
             stringArr: ['a', 'b', 'c'],

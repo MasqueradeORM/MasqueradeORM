@@ -16,7 +16,7 @@ import { mergeWhereScope } from "./find/where/where.js"
 
 /**
  * @template T
- * @typedef {import("../misc/types.js").FindObj<T>} FindObj
+ * @typedef {import("../misc/types").FindObj<T>} FindObj
  */
 
 export class Entity {
@@ -133,7 +133,8 @@ export class Entity {
         detail: {
           id: id4Deletion
         }
-      }))
+      })
+    )
 
     let targetTableName
 

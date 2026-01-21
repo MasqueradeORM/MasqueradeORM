@@ -3,7 +3,7 @@ import { createSourceFile, SyntaxKind, ScriptKind, ScriptTarget } from "typescri
 import { js2SqlTyping, nonSnake2Snake, snake2Pascal, array2String, coloredBackgroundConsoleLog } from "../misc/miscFunctions.js"
 import { dependenciesSymb, floatColumnTypes, referencesSymb } from "../misc/constants.js"
 import { uuidv7 } from "uuidv7"
-import { DbManager, DbManagerStore } from "./DbManager.js"
+import { DbManagerStore } from "./DbManager.js"
 import { OrmStore } from "../misc/ormStore.js"
 /**@typedef {import('../misc/types.js').TABLE} TABLE */
 /**@typedef {import('../misc/types.js').DbPrimaryKey} DbPrimaryKey */
@@ -235,7 +235,10 @@ export function mapType2ValidMainType(typeName, columnObj, className, nonRelatio
     else {
         if (tagName === `satisfies`) assignColumnType(`object`, columnObj, className)
         else {
-            if (typeScriptInvalidTypeArr) typeScriptInvalidTypeArr.push(typeName)
+            if (typeScriptInvalidTypeArr) {
+                if (typeName.includes('object')) assignColumnType('object', columnObj, className)
+                typeScriptInvalidTypeArr.push(typeName)
+            }
             else {
                 console.error(`\nInvalid typing error on property '${columnObj.name}' of class ${snake2Pascal(className)} - ${typeName} is not a valid main type.\n`
                     + `Valid main types are ${array2String([...nonRelationalTypesArr, ...entityNamesArr])}.`)
@@ -311,7 +314,7 @@ export function fillClassObjColumns(classObj, entityNamesArr) {
                     const typeObj = node.type
                     if (typeObj.types) {
                         if (typeObj.types.length > 3) {
-                            console.error(`\nInvalid typing error on property '${propertyName}' of class ${snake2Pascal(classObj.name)} - a property cannot have more than three types (one main type + undefined + Unique).`)
+                            console.error(`\nInvalid typing error on property '${propertyName}' of class ${snake2Pascal(classObj.name)} - a property cannot have more than three types (main type + undefined + Unique).`)
                             process.exit(1)
                         }
                         const typesObj = typeObj.types

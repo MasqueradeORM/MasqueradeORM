@@ -4,7 +4,7 @@ import ts from "typescript"
 import fs from "fs"
 import path from "path"
 import { createSourceFile, SyntaxKind, ScriptKind, ScriptTarget } from "typescript"
-import { nodeArr2ClassDict } from "../ORM/bootOrm.js"
+import { nodeArr2ClassDict } from "../src/ORM/bootOrm.js"
 
 const configPath = ts.findConfigFile(
   "./",
@@ -49,9 +49,9 @@ for (const sourceFile of program.getSourceFiles()) {
 const classDict = nodeArr2ClassDict(classNodesArr)
 const filePath = path.join(
   process.cwd(),
-  "ormClassDict.js"
+  "ormTypeScriptSetup.js"
 )
-const content = `export function Setup4Typescript() {globalThis.masqueradeClassDict_ = ${JSON.stringify(classDict)};\n}`
+const content = `export function UniversalTsSetup() {globalThis.masqueradeClassDict_ = ${JSON.stringify(classDict)};\n}`
 fs.writeFileSync(filePath, content, "utf8")
 
 

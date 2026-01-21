@@ -207,6 +207,9 @@ test('test 3 - deletion', async (t) => {
     const father = house.owner
     const childrenCount = father?.children.length
     const tenantCount = house.tenants?.length
+    // for some reason during tests 1-1 event listeners are empty but relational array event listeners are fine
+    //house.tenants?.forEach(tenant => console.log(tenant.eListener_))
+    //console.log(father?.children.eListener_)
     //@ts-ignore
     let children = [...father?.children]
     const firstChild = children.shift()
