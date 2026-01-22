@@ -1,9 +1,10 @@
 <div align="center">
+
   <a href="#">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/11da8e5e-bc87-4385-9c7e-284fa1c7caaa">
-        <source  media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/231e6164-a400-4386-9314-2ea97706e51e">
-        <img style="max-width: 33%; height: auto;" alt="MasqueradeORM Logo" src="https://github.com/user-attachments/assets/11da8e5e-bc87-4385-9c7e-284fa1c7caaa">
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/MasqueradeORM/MasqueradeORM/releases/download/0.1.0/DARK-THEME-LOGO.png">
+        <source  media="(prefers-color-scheme: light)" srcset="https://github.com/MasqueradeORM/MasqueradeORM/releases/download/0.1.0/LIGHT-THEME-LOGO.png">
+        <img style="max-width: 33%; height: auto;" alt="MasqueradeORM Logo" src="https://github.com/MasqueradeORM/MasqueradeORM/releases/download/0.1.0/DARK-THEME-LOGO.png">
     </picture>
   </a>
   <br><br>
