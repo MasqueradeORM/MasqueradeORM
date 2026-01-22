@@ -1,15 +1,10 @@
 <div align="center">
   <a href="#">
-   <img
-    src="https://github.com/user-attachments/assets/231e6164-a400-4386-9314-2ea97706e51e#gh-light-mode-only"
-    alt="Masquerade ORM Logo (Light)"
-    style="max-width: 33%; height: auto;"
-  />
-  <img
-     src="https://github.com/user-attachments/assets/11da8e5e-bc87-4385-9c7e-284fa1c7caaa#gh-dark-mode-only" 
-    alt="Masquerade ORM Logo (Dark)"
-    style="max-width: 33%; height: auto;"
-  />
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/11da8e5e-bc87-4385-9c7e-284fa1c7caaa">
+        <source  media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/231e6164-a400-4386-9314-2ea97706e51e">
+        <img style="max-width: 33%; height: auto;" alt="MasqueradeORM Logo" src="https://github.com/user-attachments/assets/11da8e5e-bc87-4385-9c7e-284fa1c7caaa">
+    </picture>
   </a>
   <br><br>
   <a href="">
