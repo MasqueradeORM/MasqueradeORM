@@ -95,7 +95,7 @@ const newInstance = new ExampleClass()
 newInstance.json.stringArr.push('d') 
 newInstance.jsonArr.stringArr.push('d')
 // The below mutation IS an assigment, but it is
-// nested, and therefore will also not be persisted.
+// nested, and therefore also won't be persisted.
 newInstance.json.nestedObj.someProp = 'hola mundo'
 
 // First solution - property assigment
@@ -174,13 +174,26 @@ this means *ClassD's* table will inherit columns from both *ClassA* and *ClassB*
 ## 4) Guidelines for Classes
 
 Classes that are connected to the ORM and mapped to database tables must follow a few simple rules:
-- **Rule 1:** Class must either directly extend Entity (imported from the package) or extend another class that has Entity as an ancestor.
-- **Rule 2:** Class properties must have a single “main” type: a `primitive`, a `primitive array`, an `object`, or a class that follows **Rule 1**.
-- **Rule 3:** Class names must be PascalCasde.
+- **Rule 1:** Class must either directly extend `Entity` (imported from the package) or extend another class that has `Entity` as an ancestor.
+- **Rule 2:** Class properties must have a single **“main” type**, which can be a `primitive`, an `object`, or a **class that follows **Rule 1****.
+
+
+- **Rule 3:** Class names must be PascalCased.
 - **Rule 4:** Class property names must be camelCased.
 
 As long as these rules are adhered to, the class is valid.  
 
+**“Main” Type Mapping** 
+
+```ts
+class EntityExtendingClass extends Entity {
+    // class properties + constructor
+}
+
+string[] // main type 'string'
+(string | undefined)[] | undefined // main type 'string'
+EntityExtendingClass[] | undefined // main type 'EntityExtendingClass'
+```
 
 <br>
 <div align="center">

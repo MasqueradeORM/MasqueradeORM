@@ -1,9 +1,14 @@
 <div align="center">
   <a href="#">
+   <img
+    src="https://github.com/user-attachments/assets/231e6164-a400-4386-9314-2ea97706e51e#gh-light-mode-only"
+    alt="Masquerade ORM Logo (Light)"
+    style="max-width: 33%; height: auto;"
+  />
   <img
-  src="https://github.com/user-attachments/assets/3bf1ab31-f9c6-4362-b17d-1dfe7c414f17"
-  alt="Masquerade ORM Logo"
-  style="max-width: 50%; height: auto;"
+     src="https://github.com/user-attachments/assets/11da8e5e-bc87-4385-9c7e-284fa1c7caaa#gh-dark-mode-only" 
+    alt="Masquerade ORM Logo (Dark)"
+    style="max-width: 33%; height: auto;"
   />
   </a>
   <br><br>
