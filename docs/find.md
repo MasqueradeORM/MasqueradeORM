@@ -94,7 +94,7 @@ It is completely safe to filter based on specific relations without having said 
 ### Introduction to the `sql`, `OR` and `AND`  functions 
 
 ```js
-import { sql, AND, OR } from "masquerade"
+import { sql, AND, OR } from "masquerade-orm"
 
 await Angel.find({
     where: {
@@ -118,7 +118,7 @@ sql`# > 12000`
 In next example, `#` identifiers must be written explicitly because the SQL string uses `AND` conditional operators directly, rather than using the `AND()` helper function.
 
 ```js
-import { sql } from "masquerade"
+import { sql } from "masquerade-orm"
 
 const twoYearsAgo = new Date().setFullYear(new Date().getFullYear() - 2)
 const oneYearAgo = new Date().setFullYear(new Date().getFullYear() - 1)
@@ -140,7 +140,7 @@ await User.find({
 
 ### Using the `sql` function to create a `LIKE` `WHERE` condition 
 ```js
-import { sql } from "masquerade"
+import { sql } from "masquerade-orm"
 
 await User.find({
     where: {
@@ -153,7 +153,7 @@ await User.find({
 ### Using the `sql` function to create a `WHERE` condition for matching JSON values
 
 ```ts
-import { Entity } from "masquerade"
+import { Entity } from "masquerade-orm"
 
 type OrderOverview = {
   status: "pending" | "completed" | "cancelled"
@@ -179,7 +179,7 @@ const completedOrders = await Order.find({
 ## The `relationalWhere` Field:
 
 ```js
-import { sql } from "masquerade"
+import { sql } from "masquerade-orm"
 
 // Finds users that have at least one chat that contains at least one message whose sender's username is 'Glory2Christ'.
 await User.find({
@@ -188,7 +188,7 @@ await User.find({
 ```
 
 ```js
-import { sql } from "masquerade"
+import { sql } from "masquerade-orm"
 
 // Identical to the previous example, but here the relational where is called from a different scope.
 // note: the field has an underscore, to prevent any (rather impossible) name collisions.
@@ -209,7 +209,7 @@ await User.find({
 The model we will use for the examples:
 
 ```ts
-import { Entity } from "masquerade"
+import { Entity } from "masquerade-orm"
 
 type UserMetadata = {
   roles: string[]          // e.g., ["admin", "moderator"]
@@ -230,7 +230,7 @@ class User extends Entity {
 
 Assuming we are writing the condition for the property `metadata` or `sessions`  like so:
 ```ts
-import { sql } from "masquerade"
+import { sql } from "masquerade-orm"
 // 'metadata' find
 const users = await User.find({where: {metadata: sql`_OPERATION_STRING_`}})
 

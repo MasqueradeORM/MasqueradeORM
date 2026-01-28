@@ -1,7 +1,7 @@
-import { ORM } from "masquerade"
+import { ORM } from "../index.js"
 import { DatabaseSync } from 'node:sqlite'
 import { Pool } from 'pg'
-/**@typedef {import('masquerade').OrmConfigObj} OrmConfigObj */
+/**@typedef {import('../index.js').OrmConfigObj} OrmConfigObj */
 
 
 export function createConfigObj(client) {

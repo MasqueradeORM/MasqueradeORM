@@ -3,7 +3,7 @@ import test from 'node:test'
 import assert from "node:assert"
 import * as classes from './testing-classes.js'
 import { resetPostgresDb, initORM, createConfigObj } from "./testInit.js"
-import { sql } from '..//src/entity/find/where/whereArgsFunctions.js'
+import { sql } from '../src/entity/find/where/whereArgsFunctions.js'
 import { generateFamiliesAndHouses } from "./generationFuncs.js"
 import { validateUpdatedAt } from "./miscFunctions.js"
 import { OrmStore } from '../src/misc/ormStore.js'

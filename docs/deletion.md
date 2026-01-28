@@ -72,7 +72,7 @@ const softDelUser = new SoftDeletableUser('JohnDoe', 'JohnDoe@gmail.com', 'hashe
 ### Hard Deletion
 
 ```ts
-import { sql } from "masquerade"
+import { sql } from "masquerade-orm"
 const twoYearsAgo = new Date().setFullYear(new Date().getFullYear() - 2)
 
 // finds all instances that haven't been mutated in over two years

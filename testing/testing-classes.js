@@ -1,6 +1,6 @@
-import { Entity } from 'masquerade'
+import { Entity } from '../index.js'
 import { jsonGenerator } from './miscFunctions.js'
-/**@typedef {import('masquerade').integer} integer */
+/**@typedef {import('../index.js').integer} integer */
 
 
 export class House extends Entity {

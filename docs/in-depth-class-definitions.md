@@ -5,7 +5,7 @@
 
 **TypseScript**
 ```ts
-import { Entity, integer } from 'masquerade'
+import { Entity, integer } from 'masquerade-orm'
 
 type MyJSON = {
     booleanField: boolean
@@ -45,8 +45,8 @@ class ExampleClass extends Entity {
 ```
 **JavaScript**
 ```js
-import { Entity } from 'masquerade'
-/**@typedef {import('masquerade').integer} integer */
+import { Entity } from 'masquerade-orm'
+/**@typedef {import('masquerade-orm').integer} integer */
 
 /**
  * @typedef {Object} MyJSON
@@ -63,7 +63,7 @@ class ExampleClass extends Entity {
     /**@type {number}*/ float = 15.7
 
     // Allowed
-    /**@type {(string | undefined)[]}*/ stringArrWithUndefineds = [
+    /**@type { (string | undefined)[] }*/ stringArrWithUndefineds = [
         'hello', 'world' , undefined
         ]
 
@@ -117,7 +117,7 @@ Both approaches will allow for proper detection and persisting of such changes.
 ## 2) Overriding the Default Id-Type
 
 ```js
-import { Entity } from 'masquerade'
+import { Entity } from 'masquerade-orm'
 
 class ClassA extends Entity {
     // to avoid bugs put 'ormClassSettings_' as the first property.
@@ -131,7 +131,7 @@ The above code lets you override the default id-type that is assigned to all Ent
 Setting the `idType` is only possible on a **direct child of Entity**.    
 
 ```ts
-import { Entity } from 'masquerade'
+import { Entity } from 'masquerade-orm'
 
 class ClassA extends Entity {
     // properties and constructor...
@@ -152,7 +152,7 @@ At the moment, this is the only class setting supported, but it may evolve in th
 ### How to create an `abstract class` when using JSDoc?
 Put the decorator `/**@abstract*/` right above the constructor of the class.   
 ```js
-import { Entity } from 'masquerade'
+import { Entity } from 'masquerade-orm'
 
 class User extends Entity {
     // properties...

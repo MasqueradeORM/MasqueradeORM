@@ -3,7 +3,7 @@
 
 ## 1) Declaring the Class:
 ```js
-import { Entity } from 'masquerade'
+import { Entity } from 'masquerade-orm'
 
 class YourClass extends Entity {
   // class properties
@@ -18,7 +18,7 @@ The class **MUST** extend `Entity` or a descendent of `Entity`.
 
 ## 3) Making a Table Column Unique:
 ```js
-/**@typedef {import('masquerade').integer} integer */
+/**@typedef {import('masquerade-orm').integer} integer */
 /**@type {string | Unique}*/ propertyName
 ```   
 
@@ -26,7 +26,8 @@ The class **MUST** extend `Entity` or a descendent of `Entity`.
 Assuming we have the following classes extending Entity: `User`, `Chat` and `Message`.    
 
 ```js
-import { Entity } from 'masquerade'
+import { Entity } from 'masquerade-orm'
+import { User, Chat, Message } from './your/entities'
 
 class Example extends Entity {
     // one-to-one relationship with a User instance
@@ -46,6 +47,8 @@ class Example extends Entity {
 ```
 Each relational property will create a junction table named `className___propName_jt`.
 
+
+** **For more in-depth documentation regarding class definitions **[click here](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/in-depth-class-definitions.md)**.** **
 
 # Booting Up the ORM
 
@@ -76,7 +79,7 @@ const yourDbConnection = new Pool({
 
 ## 2) Configuration Object:
 ```js
-/**@typedef {import('masquerade').OrmConfigObj} OrmConfigObj*/
+/**@typedef {import('masquerade-orm').OrmConfigObj} OrmConfigObj*/
 
 /** @type {OrmConfigObj} */ const ormConfig = {
     dbConnection: yourDbConnection,
@@ -100,6 +103,12 @@ await ORM.javascriptBoot(ormConfig, classes, moreClasses, someClass)
 
 
 <h1 align="center">All done!</h1>
+
+<div align="center">
+
+### **It is HIGHLY recommended to read [JSDoc – UX Tips](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/jsdoc-ux-tips.md)**
+
+</div>
 
 <br>
 <div align="center">

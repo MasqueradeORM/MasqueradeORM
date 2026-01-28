@@ -134,13 +134,12 @@ user.friendList.pop()
 
 - **[Getting Started - Javascript](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/getting-started-javascript.md#class-definitions)**
 - **[Getting Started - Typescript](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/getting-started-typescript.md#class-definitions)**
+- **[Defining Classes: In-Depth](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/in-depth-class-definitions.md)** **(important read)**
 - **[Find Method](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/find.md#find)**
 - **[Saving to Database](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/saving-to-database.md#saving-to-the-database)**
 - **[Deleting Instances from the Database](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/deletion.md)**
 - **[Managing Database Tables](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/managing-the-database.md)**
-- **[Defining Classes: In-Depth](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/in-depth-class-definitions.md)** **(important read)**
-
-
+- **[JSDoc – UX Tips](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/jsdoc-ux-tips.md)**
 
 <br>
 <div align="center">

@@ -3,7 +3,7 @@
 
 ## 1) Declaring the Class:
 ```js
-import { Entity } from 'masquerade'
+import { Entity } from 'masquerade-orm'
 
 class YourClass extends Entity {
   // class properties
@@ -20,7 +20,7 @@ propertyName?: string
 ## 3) Making a Table Column Unique:
 
 ```ts
-import { Unique } from 'masquerade'
+import { Unique } from 'masquerade-orm'
 propertyName: string | Unique
 ```   
 
@@ -28,7 +28,8 @@ propertyName: string | Unique
 Assuming we have the following classes extending Entity: `User`, `Chat` and `Message`.   
 
 ```ts
-import { Entity } from 'masquerade'
+import { Entity } from 'masquerade-orm'
+import { User, Chat, Message } from './your/entities'
 
 class Example extends Entity {
     // one-to-one relationship with a User instance
@@ -48,6 +49,7 @@ class Example extends Entity {
 ```
 Each relational property will create a junction table named `className___propName_jt`.
 
+** **For more in-depth documentation regarding class definitions **[click here](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/in-depth-class-definitions.md)**.** **
 
 # Booting Up the ORM
 
@@ -78,7 +80,7 @@ const yourDbConnection = new Pool({
 
 ## 2) Configuration Object:
 ```ts
-import type { OrmConfigObj } from "masquerade"
+import type { OrmConfigObj } from "masquerade-orm"
 
 const ormConfig: OrmConfigObj = { 
     dbConnection: yourDbConnection,

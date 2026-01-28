@@ -9,7 +9,7 @@ We offer a simple way to clean up your database using the `DbManager` class and 
 
 
 ```js
-import { DbManager } from 'masquerade'
+import { DbManager } from 'masquerade-orm'
 // will drop all unused columns in the database
 await DbManager.dropUnusedColumns() 
 // will drop all unused columns in entity_table
