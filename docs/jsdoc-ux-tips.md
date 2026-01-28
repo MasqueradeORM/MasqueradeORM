@@ -11,7 +11,12 @@ Here is how your code will look like after applying the settings:
 
 
 
-### 1) Install the `Inline fold` Extension  by Mohammed Alamri
+### 1) Install the [`Inline fold`](https://marketplace.visualstudio.com/items?itemName=moalamri.inline-fold) Extension
+
+Either click the link in the title or run the following command in the terminal:
+```bash
+code --install-extension moalamri.inline-fold
+```
 
 ### 2) Modify `User Settings (JSON)`
 **First Step**
