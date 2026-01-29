@@ -1,5 +1,5 @@
 
-export {ORM} from "./src/ORM/ORM.js"
+export {ORM} from "./src/ORM/ORM"
 export {Entity} from './src/entity/entity'
 export {DbManager} from "./src/ORM/DbManager"
 export {sql, AND, OR} from "./src/entity/find/where/whereArgsFunctions"

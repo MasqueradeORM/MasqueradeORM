@@ -1,14 +1,16 @@
-import { store } from "./store"
-import { createSourceFile, SyntaxKind, ScriptKind, ScriptTarget } from "typescript"
-
+import { store } from "./store.js"
+import { SyntaxKind } from "typescript"
+import ts from "typescript"
 
 export default function (source) {
-	const nodes = Object.values(source).map(source => createSourceFile('', source.toString(), ScriptTarget.Latest, true, ScriptKind.TSX).statements[0])
+	const sourceFile = ts.createSourceFile("", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+	const nodes = sourceFile.statements
 	for (const node of nodes) {
+		if (!node) continue
 		//@ts-ignore
-		if ((node.kind === SyntaxKind.ClassDeclaration || node.kind === SyntaxKind.ClassExpression) && node.heritageClauses)
-					//@ts-ignore
-			store.nodeArr.push(node)
+		const isValid = (node.kind === SyntaxKind.ClassDeclaration || node.kind === SyntaxKind.ClassExpression) && node.heritageClauses
+		//@ts-ignore
+		if (isValid) store.nodeArr.push(node)
 	}
 	return source
 }

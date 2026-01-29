@@ -1,6 +1,5 @@
 
 import { store } from "./store.js"
-
 import { nodeArr2ClassDict } from "../ORM/bootOrm.js"
 
 export class MasqueradePlugin {
