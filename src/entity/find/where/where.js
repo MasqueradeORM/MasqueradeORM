@@ -4,7 +4,7 @@ import { array2String, getType, nonSnake2Snake } from "../../../misc/miscFunctio
 import { OrmStore } from "../../../misc/ormStore.js"
 import { removeRelationFromUnusedRelations } from "../find.js"
 import { classWiki2ScopeProxy } from "../scopeProxies.js"
-import { mergeRelationalWhereScope } from "./relationalWhere.js"
+import { mergeTemplateWhereScope } from "./templateWhere.js"
 /**@typedef {import('../../../misc/classes').AndArray} AndArray */
 /**@typedef {import('../../../misc/classes').AndArray} OrArray */
 
@@ -209,7 +209,7 @@ export function mergeWhereScope(proxyMap, whereObj) {
     for (const [key, whereVal] of entries) {
 
         if (key === "_relationalWhere") {
-            proxyMap = mergeRelationalWhereScope(proxyMap, whereVal)
+            proxyMap = mergeTemplateWhereScope(proxyMap, whereVal)
             continue
         }
 
@@ -236,8 +236,8 @@ export function mergeWhereScope(proxyMap, whereObj) {
             }
 
             const passedMap = classMap.junctions_[key]
-            if (whereValType === "function") passedMap.relationalWhere_ = [whereVal]
-            else if (whereValType === "array") passedMap.relationalWhere_ = whereVal
+            if (whereValType === "function") passedMap.templateWhere_ = [whereVal]
+            else if (whereValType === "array") passedMap.templateWhere_ = whereVal
             else mergeWhereScope(passedMap, whereVal)
         }
     }

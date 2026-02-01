@@ -42,8 +42,8 @@ npm install masquerade-orm
 - **Powerful IntelliSense** - Confidently build complex queries with real-time IDE feedback when something’s wrong.
 - **Minimal memory usage** - One class instance per database row, minimizing memory usage and avoiding duplicates through smart state management.
 - **Optimized querying** - Fewer queries through intelligent transaction grouping without sacrificing data integrity.
-- **Relational WHERE clauses** - Easily write conditions that compare two columns within the same table or columns across different tables.
-- **Write complex WHERE conditions using a template-literal helper** - Enabling expressive comparisons such as >=, LIKE, object-property access, and even array element matching, all without cluttering your query code.
+- **Expressive template-literal WHERE clauses** - Write complex, readable conditions such as LIKE, ≥, nested property access, array element matching and more — using clean tagged template literals, without string concatenation or cluttered code.
+- **Cross-column conditions** - Easily write WHERE clauses that compare two columns (within the same table or across joined tables).
 - **Powerful relation capabilities** - Full support for eager & lazy loading, unidirectional / bidirectional / self-referencing relationships, and modifying associations even when they are not loaded.
 - **SQL injection protection** - All queries are parameterized.
 - **Minimal data transfer size** - Improves performance in client-server setups (not applicable for embedded databases like SQLite).

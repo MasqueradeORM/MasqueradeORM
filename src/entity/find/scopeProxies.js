@@ -40,7 +40,7 @@ export function classWiki2ScopeProxy(classWiki) {
                 || key === "uncalledJunctions_"
                 || key === "junctions_"
                 || key === "where_"
-                || key === "relationalWhere_"
+                || key === "templateWhere_"
                 || key === "isArray_"
             ) return target[key]
             else if (key === proxyType) return 'categorizingProxy'
@@ -56,5 +56,5 @@ export function findPropOnScopeProxy(scopeProxy, key, rootClassName) {
     else if (scopeProxy.uncalledJunctions_ && scopeProxy.uncalledJunctions_[key]) return [scopeProxy.uncalledJunctions_[key], scopeProxy, "uncalledJunctions_"]
     else if (scopeProxy.junctions_ && scopeProxy.junctions_[key]) return [scopeProxy.junctions_[key], scopeProxy, "junctions_"]
     else if (scopeProxy.parent_) return findPropOnScopeProxy(scopeProxy.parent_, key, rootClassName)
-    else throw new Error(`\n'${key}' is not a valid property of class ${rootClassName}. Please fix the find function's argument. \nhint: use intellisense by pressing CNTRL + space to see all viable options.`)
+    else throw new Error(`\n'${key}' is not a valid property of class ${rootClassName}. Please fix the find function's argument. \nhint: use IntelliSense.`)
 }

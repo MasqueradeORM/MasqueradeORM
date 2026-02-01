@@ -5,7 +5,7 @@ import { proxyType, removeRelationFromUnusedRelations } from "../find.js"
 import { deproxifyScopeProxy, findPropOnScopeProxy, classWiki2ScopeObj } from "../scopeProxies.js"
 
 export function relationalWhereFuncs2Statements(mapObj, whereObj, queryStr = ``) {
-    const relationalWhereFunc = mapObj.relationalWhere
+    const relationalWhereFunc = mapObj.templateWhere
     let AliasObj4func = createFullAndFlatAliasObj(mapObj)
     const sqlWhereObj = relationalWhereFunc(AliasObj4func)
     while (sqlWhereObj.params.length + sqlWhereObj.strings.length > 0) {
@@ -49,24 +49,24 @@ function createFullAndFlatAliasObj(mapObj, fullFlatAliasObj = {}) {
     return fullFlatAliasObj
 }
 
-export function mergeRelationalWhereScope(proxyMap, relationalWhereFunc) {
+export function mergeTemplateWhereScope(proxyMap, relationalWhereFunc) {
     if (typeof relationalWhereFunc !== "function") throw new Error(`Relational where expects a function.`)
     let mapObj = deproxifyScopeProxy(proxyMap)
     const classWiki = OrmStore.store.classWikiDict[mapObj.className_]
-    const relationalWhereMapProxy = createRelationalWhereProxy(mapObj, classWiki)
+    const relationalWhereMapProxy = createTemplateWhereProxy(mapObj, classWiki)
     relationalWhereFunc(relationalWhereMapProxy)
     mapObj = deproxifyScopeProxy(relationalWhereMapProxy)
-    mapObj.relationalWhere_ = relationalWhereFunc
-    return reproxyMapObjPostRelationalWhere(mapObj, classWiki)
+    mapObj.templateWhere_ = relationalWhereFunc
+    return reproxyWikiPostTemplateWhere(mapObj, classWiki)
 }
 
-function reproxyMapObjPostRelationalWhere(mapObj, classWiki) {
-    if (mapObj.parent_) mapObj.parent_ = reproxyMapObjPostRelationalWhere(mapObj.parent_, classWiki.parent)
+function reproxyWikiPostTemplateWhere(mapObj, classWiki) {
+    if (mapObj.parent_) mapObj.parent_ = reproxyWikiPostTemplateWhere(mapObj.parent_, classWiki.parent)
 
     if (mapObj.junctions_) {
         const mapRelations = mapObj.junctions_
         for (const key of Object.keys(mapRelations))
-            mapRelations[key] = reproxyMapObjPostRelationalWhere(mapRelations[key], classWiki.junctions[key])
+            mapRelations[key] = reproxyWikiPostTemplateWhere(mapRelations[key], classWiki.junctions[key])
     }
 
     const proxy = new Proxy(mapObj, {
@@ -78,7 +78,7 @@ function reproxyMapObjPostRelationalWhere(mapObj, classWiki) {
                 || key === "uncalledJunctions_"
                 || key === "junctions_"
                 || key === "where_"
-                || key === "relationalWhere_"
+                || key === "templateWhere_"
                 || key === "isArray_"
             ) return target[key]
             else if (key === "raw_") return target
@@ -89,20 +89,20 @@ function reproxyMapObjPostRelationalWhere(mapObj, classWiki) {
     return proxy
 }
 
-export function createRelationalWhereProxy(mapObj, classWiki) {
+export function createTemplateWhereProxy(mapObj, classWiki) {
     if (classWiki.parent) {
         let parent
         if (!mapObj.parent_) parent = classWiki2ScopeObj(classWiki)
         else parent = mapObj.parent_
         const parentOrmMap = classWiki.parent
-        mapObj.parent_ = createRelationalWhereProxy(parent, parentOrmMap)
+        mapObj.parent_ = createTemplateWhereProxy(parent, parentOrmMap)
     }
 
     if (mapObj.junctions_) {
         const mapRelations = mapObj.junctions_
         for (const key of Object.keys(mapRelations)) {
             const relationOrmMap = classWiki.junctions[key]
-            mapRelations[key] = createRelationalWhereProxy(mapRelations[key], relationOrmMap)
+            mapRelations[key] = createTemplateWhereProxy(mapRelations[key], relationOrmMap)
         }
     }
 
@@ -115,28 +115,28 @@ export function createRelationalWhereProxy(mapObj, classWiki) {
                 || key === "uncalledJunctions_"
                 || key === "junctions_"
                 || key === "where_"
-                || key === "relationalWhere_"
+                || key === "templateWhere_"
                 || key === "isArray_"
             ) return target[key]
             else if (key === "raw_") return target
             else if (key === proxyType) return 'relationalWhereProxy'
-            else return findPropOnRelationalWhereMapProxy(target, key, classWiki)
+            else return findPropOnTemplateWhereProxy(target, key, classWiki)
         }
     })
     return proxy
 }
 
-export function findPropOnRelationalWhereMapProxy(mapObj, key, classWiki) {
+export function findPropOnTemplateWhereProxy(mapObj, key, classWiki) {
     if (mapObj.uncalledJunctions_[key]) {
         const relation = mapObj.uncalledJunctions_[key]
         const formattedRelationObj = classWiki2ScopeObj(relation)
         removeRelationFromUnusedRelations(mapObj, key)
         const proxyRelations = mapObj.junctions_ ??= {}
-        proxyRelations[key] = createRelationalWhereProxy(formattedRelationObj, classWiki.junctions[key])
+        proxyRelations[key] = createTemplateWhereProxy(formattedRelationObj, classWiki.junctions[key])
         return proxyRelations[key]
     }
     else if (mapObj.columns_[key]) return mapObj.columns_[key]
     else if (mapObj.junctions_[key]) return mapObj.junctions_[key]
-    else if (mapObj.parent_) return findPropOnRelationalWhereMapProxy(mapObj.parent_, key, classWiki.parent)
-    else throw new Error(`\n'${key}' is not a valid property of class ${classWiki.className}. Please fix the find function's relationalWhere. \nhint: use intellisense by pressing CNTRL + space to see all viable options.`)
+    else if (mapObj.parent_) return findPropOnTemplateWhereProxy(mapObj.parent_, key, classWiki.parent)
+    else throw new Error(`\n'${key}' is not a valid property of class ${classWiki.className}. Please fix the find function's templateWhere. \nhint: use intellisense by pressing CNTRL + space to see all viable options.`)
 }

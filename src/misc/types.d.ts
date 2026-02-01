@@ -204,7 +204,7 @@ type NonRelationsProperties<T> = Exclude<keyof T, RelationsProperties<T>>
 export type FindObj<T> = {
   relations?: Partial<RelationsOnly<T>>
   where?: WhereProperties<T>
-  relationalWhere?: sqlArrowFnTable<T> | (sqlArrowFn<T> | null)[] | null
+  templateWhere?: sqlArrowFnTable<T> | (sqlArrowFn<T> | null)[] | null
 }
 
 // ---------------------------------------------------------
@@ -455,7 +455,7 @@ type ArrColumnsRawParams =
 // export type FindObj<T> = {
 //   relations?: Partial<RelationsOnly<T>>
 //   where?: WhereProperties<T>
-//   relationalWhere?: sqlArrowFn<T> | sqlArrowFn<T>[]
+//   templateWhere?: sqlArrowFn<T> | sqlArrowFn<T>[]
 // }
 
 // // ---------------------------------------------------------

@@ -13,7 +13,7 @@ The three optional fields are:
 
 - relations
 - where
-- relationalWhere
+- templateWhere
 
 
 
@@ -138,6 +138,16 @@ await User.find({
 // 'where' conditions in an easy-to-read and easy-to-write manner.
 ```
 
+<!-- **Equivalent Alternative Syntax:** 
+```js
+await User.find({
+    where: {
+        donations: (donations) => sql`1200 < ${donations} AND ${donations} < 5700`, 
+        createdAt: (createdAt) => sql`${twoYearsAgo} <= ${createdAt} AND ${createdAt} <= ${oneYearAgo}` 
+    }
+})
+``` -->
+
 ### Using the `sql` function to create a `LIKE` `WHERE` condition 
 ```js
 import { sql } from "masquerade-orm"
@@ -176,27 +186,27 @@ const completedOrders = await Order.find({
 - **Note:** for SQL-client specific guide for writing `WHERE` conditions involving JSON and array data, go to the bottom of this page or click **[here](https://github.com/MasqueradeORM/MasqueradeORM/blob/master/docs/find.md#array-and-json-where-conditions-guide)**.
 
 
-## The `relationalWhere` Field:
+## The `templateWhere` Field:
 
 ```js
 import { sql } from "masquerade-orm"
 
 // Finds users that have at least one chat that contains at least one message whose sender's username is 'Glory2Christ'.
 await User.find({
-   relationalWhere: (user) => sql`${user.chats.messages.sender.username} = 'Glory2Christ'`
+   templateWhere: (user) => sql`${user.chats.messages.sender.username} = 'Glory2Christ'`
 })
 ```
 
 ```js
 import { sql } from "masquerade-orm"
 
-// Identical to the previous example, but here the relational where is called from a different scope.
+// Identical to the previous example, but here the 'templateWhere' is called from a different scope.
 // note: the field has an underscore, to prevent any (rather impossible) name collisions.
 
 await User.find({
   where: {
     chats: {
-      relationalWhere_: (chat) => sql`${chat.messages.sender.username} = 'Glory2Christ'`,
+      templateWhere_: (chat) => sql`${chat.messages.sender.username} = 'Glory2Christ'`,
       // can be combined with regular 'where' conditions - below is valid code
       // chatName: 'The History of Orthodoxy' 
     }

@@ -4,14 +4,14 @@ import { rowObj2InstanceProxy } from "../../proxies/instanceProxy.js"
 import { createRelationalArrayProxy } from "../../proxies/relationalArrayProxy.js"
 import { generateQueryStrWithCTEs } from "./queryBuilder.js"
 import { junctionJoin, parentJoin } from "./joins.js"
-import { relationalWhereFuncs2Statements } from "./where/relationalWhere.js"
+import { relationalWhereFuncs2Statements } from "./where/templateWhere.js"
 import { whereValues2Statements } from "./where/where.js"
 import { OrmStore } from "../../misc/ormStore.js"
 
 export const proxyType = Symbol('proxyType')
 
 export function destructureAndValidateArg(findObj) {
-    let { relations: eagerLoad, where, relationalWhere } = findObj
+    let { relations: eagerLoad, where, templateWhere } = findObj
 
     if (eagerLoad) {
         const type = getType(eagerLoad)
@@ -25,11 +25,11 @@ export function destructureAndValidateArg(findObj) {
         else if (Object.keys(where).length === 0) where = undefined
     }
 
-    if (relationalWhere) {
-        const type = getType(relationalWhere)
-        if (type !== "function") throw new Error(`\nInvalid value in the 'relationalWhere' field of the 'find' function's argument. Expected a function.`)
+    if (templateWhere) {
+        const type = getType(templateWhere)
+        if (type !== "function") throw new Error(`\nInvalid value in the 'templateWhere' field of the 'find' function's argument. Expected a function.`)
     }
-    return [eagerLoad, where, relationalWhere]
+    return [eagerLoad, where, templateWhere]
 }
 
 export function removeRelationFromUnusedRelations(classMap, key) {
@@ -63,7 +63,7 @@ export function parseFindWiki(findWiki, aliasBase = 'a', aliasArr = [], joinStat
             returnedWiki.junctions[key] = parseFindWiki(joinedTable, aliasBase, aliasArr, joinStatements, whereObj, selectArr)[0]
         }
     }
-    if (returnedWiki.relationalWhere) relationalWhereFuncs2Statements(returnedWiki, whereObj)
+    if (returnedWiki.templateWhere) relationalWhereFuncs2Statements(returnedWiki, whereObj)
     if (returnedWiki.where) whereValues2Statements(returnedWiki, whereObj)
     return [returnedWiki, joinStatements, whereObj, selectArr]
 }

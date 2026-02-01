@@ -11,7 +11,7 @@ import { aliasedFindWiki2QueryRes, parseFindWiki, destructureAndValidateArg } fr
 import { deproxifyScopeProxy, classWiki2ScopeProxy } from "./find/scopeProxies.js"
 import { postgresCreateProxyArray } from "./find/sqlClients/postgresFuncs.js"
 import { sqliteCreateProxyArray } from "./find/sqlClients/sqliteFuncs.js"
-import { mergeRelationalWhereScope } from "./find/where/relationalWhere.js"
+import { mergeTemplateWhereScope } from "./find/where/templateWhere.js"
 import { mergeWhereScope } from "./find/where/where.js"
 
 /**
@@ -68,11 +68,11 @@ export class Entity {
 
     let classWiki = classWikiDict[this.name]
     if (!classWiki) throw new Error(`The class '${this.name}' has not been included in the ORM boot method.`)
-    const [relationsArg, whereArg, relationalWhereArg] = destructureAndValidateArg(findObj)
+    const [relationsArg, whereArg, templateWhereArg] = destructureAndValidateArg(findObj)
     let findWiki
     const baseProxyMap = classWiki2ScopeProxy(classWiki)
     if (whereArg) mergeWhereScope(baseProxyMap, whereArg)
-    if (relationalWhereArg) findWiki = mergeRelationalWhereScope(baseProxyMap, relationalWhereArg)
+    if (templateWhereArg) findWiki = mergeTemplateWhereScope(baseProxyMap, templateWhereArg)
     findWiki = deproxifyScopeProxy(baseProxyMap)
 
     const [aliasedFindMap, joinStatements, whereObj] = parseFindWiki(findWiki)
