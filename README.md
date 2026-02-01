@@ -47,8 +47,10 @@ npm install masquerade-orm
 - **Powerful relation capabilities** - Full support for eager & lazy loading, unidirectional / bidirectional / self-referencing relationships, and modifying associations even when they are not loaded.
 - **SQL injection protection** - All queries are parameterized.
 - **Minimal data transfer size** - Improves performance in client-server setups (not applicable for embedded databases like SQLite).
+- **Soft + hard deletion support**
 - **Abstract and non-abstract inheritance** - Enables the use of abstract classes, even in JavaScript.
 - **Strong typing even in JavaScript** - Powered by JSDoc, no compile step required.
+- **Smart Schema Cleanup** - Automatically detect and easily remove unused tables and columns that are not longer in use, reducing database bloat and improving performance.
 - **Lightweight** - Minimal dependencies.
 - **Combines the convenience of embedded SQLite with the strict typing of RDBMS**
 
