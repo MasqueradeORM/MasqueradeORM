@@ -50,7 +50,7 @@ npm install masquerade-orm
 - **Soft + hard deletion support**
 - **Abstract and non-abstract inheritance** - Enables the use of abstract classes, even in JavaScript.
 - **Strong typing even in JavaScript** - Powered by JSDoc, no compile step required.
-- **Smart Schema Cleanup** - Automatically detect and easily remove unused tables and columns that are not longer in use, reducing database bloat and improving performance.
+- **Smart Schema Cleanup** - Automatically detect and easily remove unused tables and columns, reducing database bloat and improving performance.
 - **Lightweight** - Minimal dependencies.
 - **Combines the convenience of embedded SQLite with the strict typing of RDBMS**
 
