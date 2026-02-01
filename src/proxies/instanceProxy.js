@@ -65,8 +65,8 @@ export function rowObj2InstanceProxy(resultObj, findWiki, Entities) {
                 while (!currentWiki.uncalledJunctions[property]) currentWiki = currentWiki.parent
                 const uncalledJunctionObj = currentWiki.uncalledJunctions[property]
                 const nameOfMapWithJunction = uncalledJunctionObj.className
-                const promiseOf = uncalledJunctionObj.isArray ? nameOfMapWithJunction + `[]` : nameOfMapWithJunction
-                instance[property] = new LazyPromise(promiseOf)
+                const promiseType = uncalledJunctionObj.isArray ? nameOfMapWithJunction + `[]` : nameOfMapWithJunction
+                instance[property] = new LazyPromise(instance, property, promiseType, (resolve, reject) => promiseExecutor(instance, property, resolve, reject))
             }
         }
 
@@ -76,43 +76,57 @@ export function rowObj2InstanceProxy(resultObj, findWiki, Entities) {
     }
 }
 
-export function insertProxyIntoEntityMap(proxy, entityMap) {
-    entityMap.set(proxy.id, new WeakRef(proxy))
-    ORM[FinalizationRegistrySymb].register(proxy, [proxy.constructor.name, proxy.id])
-}
-
-export function instanceProxyGetHandler(target, key, classWiki) {
-    const val = target[key]
-    if (!(val instanceof LazyPromise)) return val
-
+function promiseExecutor(target, key, resolve, reject) {
+    if (ChangeLogger.scheduledFlush) ChangeLogger.save().then()
     const { sqlClient, dbConnection } = OrmStore.store
-    const [classification, joinedClassMap, mapWithProp] = getPropertyClassification(key, classWiki)
-    let joinedTable
-
-    if (classification === "Join") joinedTable = classWiki.junctions[key]
-    else joinedTable = mapWithProp.junctions[key]
-
-    const isArrayOfInstances = joinedClassMap.isArray
+    const classWiki = OrmStore.getClassWiki(target)
+    const [classification, joinedClassWiki, mapWithProp] = getPropertyClassification(key, classWiki)
+    const isArrayOfInstances = joinedClassWiki.isArray
 
     let queryStr = `SELECT entity.* FROM ${nonSnake2Snake(mapWithProp.className)}___${nonSnake2Snake(key)}_jt jt` +
-        ` LEFT JOIN ${nonSnake2Snake(joinedClassMap.className)} entity ON jt.joined_id = entity.id WHERE jt.joining_id = `
+        ` LEFT JOIN ${nonSnake2Snake(joinedClassWiki.className)} entity ON jt.joined_id = entity.id WHERE jt.joining_id = `
     queryStr += sqlClient === "postgresql" ? `$1` : `?`
 
     let queryFunc
     if (sqlClient === "postgresql") queryFunc = (queryStr, id) => dbConnection.query(queryStr, [id])
     else queryFunc = (queryStr, id) => dbConnection.prepare(queryStr).all(id)
 
-    let promise
     try {
-        let queryRes = queryFunc(queryStr, target.id)
-        promise = createLazyPromise(target, key, queryRes, mapWithProp.junctions[key], isArrayOfInstances, sqlClient)
-        promise.then(res => target[key] = res)
-    }
-    catch (e) {
-        coloredBackgroundConsoleLog(`Lazy loading failed. ${e}\n`, `failure`)
-    }
+        Promise.resolve(queryFunc(queryStr, target.id))
+            .then(rows => {
+                const { className, columns, junctions } = joinedClassWiki
+                const findWiki = { className, columns, uncalledJunctions: junctions }
+                let currentWiki = joinedClassWiki
+                let currentScopedMap = findWiki
+                while (currentWiki.parent) {
+                    const { className, columns, junctions } = currentWiki.parent
+                    currentScopedMap.parent = { className, columns, uncalledJunctions: junctions }
+                    currentScopedMap = currentScopedMap.parent
+                    currentWiki = currentWiki.parent
+                }
 
-    return promise
+                const proxyArr = []
+                for (const row of rows) {
+                    const rowWithCamelCasedProps = Object.fromEntries(Object.entries(row).map(([key, val]) => [snake2Pascal(key, true), val]))
+                    proxyArr.push(rowObj2InstanceProxy(rowWithCamelCasedProps, findWiki, OrmStore.store.entities))
+                }
+
+                if (isArrayOfInstances) target[key] = createRelationalArrayProxy(target, key, proxyArr, classWiki.className)
+                else target[key] = proxyArr[0]
+
+                resolve(target[key])
+            })
+            .catch(reject)
+    }
+    catch (err) {
+        coloredBackgroundConsoleLog(`Lazy loading failed. ${err}`, 'failure')
+        reject(err)
+    }
+}
+
+export function insertProxyIntoEntityMap(proxy, entityMap) {
+    entityMap.set(proxy.id, new WeakRef(proxy))
+    ORM[FinalizationRegistrySymb].register(proxy, [proxy.constructor.name, proxy.id])
 }
 
 export function instanceProxySetHandler(target, key, value, eventListenersObj, classWiki) {
@@ -356,57 +370,6 @@ export function createLazyLoadQueryStr(property, classWiki) {
 }
 
 
-export function createLazyPromise(target, key, queryRes, classWiki, isArrayOfInstances, client) {
-    return new Promise(async (resolve) => {
-        let resultArr
-        try {
-            if (client === "postgresql") resultArr = (await queryRes).rows
-            else resultArr = queryRes
-
-            if (!resultArr.length) {
-                if (isArrayOfInstances) {
-                    target[key] = []
-                    resolve([])
-                }
-                else {
-                    target[key] = undefined
-                    resolve(undefined)
-                }
-            }
-
-            const { className, columns, junctions } = classWiki
-            const findWiki = { className, columns, uncalledJunctions: junctions }
-            let currentWiki = classWiki
-            let currentScopedMap = findWiki
-            while (currentWiki.parent) {
-                const { className, columns, junctions } = currentWiki.parent
-                currentScopedMap.parent = { className, columns, uncalledJunctions: junctions }
-                currentScopedMap = currentScopedMap.parent
-                currentWiki = currentWiki.parent
-            }
-
-            const proxyArr = []
-            for (const row of resultArr) {
-                const rowWithCamelCasedProps = Object.fromEntries(Object.entries(row).map(([key, val]) => [snake2Pascal(key, true), val]))
-                proxyArr.push(rowObj2InstanceProxy(rowWithCamelCasedProps, findWiki, OrmStore.store.entities))
-            }
-
-            if (isArrayOfInstances) {
-                target[key] = createRelationalArrayProxy(target, key, proxyArr, classWiki.className)
-                resolve(target[key])
-            }
-            else {
-                target[key] = proxyArr[0]
-                resolve(target[key])
-            }
-        }
-        catch (e) {
-            coloredBackgroundConsoleLog(`Lazy loading failed. ${e}\n`, `failure`)
-        }
-    })
-}
-
-
 export function uncalledPropertySetHandler(target, key, value, columnClassificationArr) {
     const [propertyType, propertyTypeObj, mapWithProp] = columnClassificationArr
     const joiningId = target.id
@@ -496,7 +459,8 @@ export function proxifyEntityInstanceObj(instance, uncalledRelationalProperties)
             else if (key === "eEmitter_") return emitter
             else if (key === "eListener_") return eventListenersObj
             else if (key === "_isDeleted_") return target[key]
-            return instanceProxyGetHandler(target, key, classWiki)
+            return target[key]
+            //return instanceProxyGetHandler(target, key, classWiki)
         },
         set: (target, /**@type {string}*/ key, value) => {
             instanceProxySetHandler(target, key, value, eventListenersObj, classWiki)

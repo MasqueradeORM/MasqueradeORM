@@ -1,5 +1,7 @@
 /**@typedef {import('./types').PrimitivesNoNull} PrimitivesNoNull*/
 
+import { OrmStore } from './ormStore.js'
+
 
 /**
  * @template T
@@ -51,13 +53,65 @@ export class Alias {
 
 
 export class LazyPromise {
-  constructor(className) {
-    this.promise =
-      className
+  constructor(instance, property, promiseType, executor) {
+    // if (typeof executor !== 'function') {
+    //   throw new TypeError(
+    //     `LazyPromise executor must be a function, got ${typeof executor}`
+    //   )
+    // }
+    this.instanceContext = {
+      instanceId: instance.id,
+      instanceClass: instance.constructor.name,
+      property,
+      promiseType
+    }
+    this._executor = executor
+    this._promise = null
+  }
 
+  _getPromise() {
+    if (!this._promise) {
+      this._promise = new Promise((resolve, reject) => {
+        try {
+          this._executor(resolve, reject)
+        } catch (err) {
+          reject(err)
+        }
+      })
+    }
+    return this._promise
+  }
+
+  then(onFulfilled, onRejected) {
+    return this._getPromise().then(onFulfilled, onRejected)
+  }
+
+  catch(onRejected) {
+    return this._getPromise().catch(onRejected)
+  }
+
+  finally(onFinally) {
+    return this._getPromise().finally(onFinally)
   }
 
   toString() {
-    return `Promise<${this.promise}>`
+    return `Promise<${this.instanceContext.promiseType}>`
   }
+
+  push(...items) {
+    const { instanceClass, instanceId, property, promiseType } = this.instanceContext
+    const cleanedType = promiseType.endsWith('[]') ? promiseType.slice(0, -2) : promiseType
+    const addedIds = []
+    for (const item of items) {
+      if (item.constructor.name !== cleanedType) throw new Error(`${item} is of type ${item.constructor.name} but must be of type ${cleanedType}.`)
+      addedIds.push(item.id)
+    }
+
+    const changesObj = OrmStore.store.dbChangesObj
+    changesObj[instanceClass] ??= {}
+    const instanceChangeObj = changesObj[instanceClass][instanceId] ??= {}
+    const relationsLogger = instanceChangeObj[property] ??= { added: [], removed: [] }
+    relationsLogger.added.push(...addedIds)
+  }
+
 }

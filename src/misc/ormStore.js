@@ -12,7 +12,10 @@ export class OrmStore {
     }
 
     static getClassWiki(instanceClass) {
+        if (typeof instanceClass === 'string')
         return this.store.classWikiDict[instanceClass]
+
+        return this.store.classWikiDict[instanceClass.constructor.name]
     }
 }
 

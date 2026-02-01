@@ -37,21 +37,20 @@ npm install masquerade-orm
 ```
 
 # Features
-- **Effortless setup** - no ORM-specific structures; just use your classes.
-- **Zero schema planning** - tables and schema are generated automatically.
-- **Powerful IntelliSense** - confidently build complex queries with real-time IDE feedback when something’s wrong.
-- **Minimal memory usage** - one class instance per database row, minimizing memory usage and avoiding duplicates through smart state management.
-- **Optimized querying** - fewer queries through intelligent transaction grouping without sacrificing data integrity.
-- **Relational WHERE clauses** - easily write conditions that compare two columns within the same table or columns across different tables.
-- **Write complex WHERE conditions using a template-literal helper** - enabling expressive comparisons like >=, LIKE, object-property access, and even array element matching, all without cluttering your query code.
-- **SQL injection protection** - all queries are parameterized.
-- **Lightweight** - minimal dependencies.
-- **Strong typing even in JavaScript** - powered by JSDoc, no compile step required.
-- **Reduced data transfer size** - improves performance in client-server setups (not applicable for embedded databases like SQLite).
-- **Abstract and non-abstract inheritance** - enables the use of abstract classes, even in JavaScript.
+- **Effortless setup** - No ORM-specific structures; just use your classes.
+- **Zero schema planning** - Tables and schema are generated automatically.
+- **Powerful IntelliSense** - Confidently build complex queries with real-time IDE feedback when something’s wrong.
+- **Minimal memory usage** - One class instance per database row, minimizing memory usage and avoiding duplicates through smart state management.
+- **Optimized querying** - Fewer queries through intelligent transaction grouping without sacrificing data integrity.
+- **Relational WHERE clauses** - Easily write conditions that compare two columns within the same table or columns across different tables.
+- **Write complex WHERE conditions using a template-literal helper** - Enabling expressive comparisons such as >=, LIKE, object-property access, and even array element matching, all without cluttering your query code.
+- **Powerful relation capabilities** - Full support for eager & lazy loading, unidirectional / bidirectional / self-referencing relationships, and modifying associations even when they are not loaded.
+- **SQL injection protection** - All queries are parameterized.
+- **Minimal data transfer size** - Improves performance in client-server setups (not applicable for embedded databases like SQLite).
+- **Abstract and non-abstract inheritance** - Enables the use of abstract classes, even in JavaScript.
+- **Strong typing even in JavaScript** - Powered by JSDoc, no compile step required.
+- **Lightweight** - Minimal dependencies.
 - **Combines the convenience of embedded SQLite with the strict typing of RDBMS**
-- **Eager and lazy relations**
-- **Unidirectional, bidirectional, and self-referenced relations**
 
 
 # Example Code Implementation

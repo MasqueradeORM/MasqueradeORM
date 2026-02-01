@@ -20,8 +20,8 @@ export class ChangeLogger {
     static async save() {
         const dbChanges = OrmStore.store.dbChangesObj
         if (!Object.keys(dbChanges).length || ChangeLogger.currentlySaving) return
-        // ChangeLogger.currentlySaving = true
-
+        
+        ChangeLogger.currentlySaving = true
         let paramIndex = 1
         const { sqlClient, dbConnection } = OrmStore.store
         const deletedInstancesArr = dbChanges.deletedInstancesArr
