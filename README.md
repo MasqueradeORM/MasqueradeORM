@@ -42,7 +42,7 @@ npm install masquerade-orm
 - **Powerful IntelliSense** - Confidently build complex queries with real-time IDE guidance and warnings when something’s wrong.
 - **Minimal memory usage** - One class instance per database row, minimizing memory usage and avoiding duplicates through smart state management.
 - **Optimized querying** - Fewer queries through intelligent transaction grouping without sacrificing data integrity.
-- **Expressive template-literal WHERE clauses** - Write complex, readable conditions such as LIKE, ≥, nested property access, array element matching and more — using clean tagged template literals, without string concatenation or cluttered code.
+- **Expressive template-literal WHERE clauses** - Write complex, readable conditions such as LIKE, ≥, nested property access, array element matching (and more) by using IntelliSense-enabled tagged template literals. Any SQL WHERE logic can be expressed through this API.
 - **Cross-column conditions** - Easily write WHERE clauses that compare two columns (within the same table or across joined tables).
 - **Powerful relation capabilities** - Full support for eager & lazy loading, unidirectional / bidirectional / self-referencing relationships, and modifying associations even when they are not loaded.
 - **SQL injection protection** - All queries are parameterized.
@@ -50,7 +50,7 @@ npm install masquerade-orm
 - **Soft + hard deletion support**
 - **Abstract and non-abstract inheritance** - Enables the use of abstract classes, even in JavaScript.
 - **Strong typing even in JavaScript** - Powered by JSDoc, no compile step required.
-- **Smart Schema Cleanup** - Automatically detect and easily remove unused tables and columns, reducing database bloat and improving performance.
+- **Smart schema cleanup** - Automatically detect and easily remove unused tables and columns, reducing database bloat and improving performance.
 - **Lightweight** - Minimal dependencies.
 - **Combines the convenience of embedded SQLite with the strict typing of RDBMS**
 
