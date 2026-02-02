@@ -138,5 +138,3 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-
-testing/testInit.js

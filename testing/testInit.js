@@ -4,7 +4,7 @@ import { Pool } from 'pg'
 /**@typedef {import('../index.js').OrmConfigObj} OrmConfigObj */
 
 
-export function createConfigObj(client) {
+export function createConfigObj(client, /**@type {undefined | string}*/ dbPaswword = undefined) {
     if (client === `sqlite`) return {
         dbConnection: new DatabaseSync('test'),
         idTypeDefault: "INT"
@@ -15,7 +15,7 @@ export function createConfigObj(client) {
             user: 'postgres',                   // e.g., 'postgres'
             host: 'localhost',                 // database host
             database: 'masquerade-test',      // database name
-            password: '123456789',           // your password
+            password: `${dbPaswword}`,           // your password
             port: 5432,                     // default PostgreSQL port
         }),
         idTypeDefault: "INT"

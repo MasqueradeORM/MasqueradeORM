@@ -10,7 +10,7 @@ import { OrmStore } from '../src/misc/ormStore.js'
 
 const { House, Person, NonRelationalClass2 } = classes
 
-const configObj = createConfigObj()
+const configObj = createConfigObj('postgres', '123456789')
 await resetPostgresDb(configObj.dbConnection)
 await initORM(configObj, classes)
 let dbChanges = OrmStore.store.dbChangesObj
