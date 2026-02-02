@@ -1,6 +1,6 @@
 # Deleting Instances from the Database
 
-### Soft Deletion
+## Soft Deletion
 The ORM does not support soft deletion by default. To implement soft deletion, just create an abstract class like so: 
 
 **TypeScript**
@@ -69,7 +69,7 @@ const softDelUser = new SoftDeletableUser('JohnDoe', 'JohnDoe@gmail.com', 'hashe
 
 **Note:** Unlike `Entity`, the `SoftDel` classes need to be passed into the `ORM.boot` method that is being called to init the ORM.
 
-### Hard Deletion
+## Hard Deletion
 
 ```ts
 import { sql } from "masquerade-orm"
@@ -91,7 +91,7 @@ The `delete` method hard-deletes the instance from the database; the instance ca
 </div>
 
 
-## Pre-Deletion Step
+## Pre-Deletion Step for Hard Deletion
 
 ### When is a pre-deletion step required?  
 A pre-deletion step is required when the class instance has **dependents**.  
