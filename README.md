@@ -39,7 +39,7 @@ npm install masquerade-orm
 # Features
 - **Effortless setup** - No ORM-specific structures; just use your classes.
 - **Zero schema planning** - Tables and schema are generated automatically.
-- **Powerful IntelliSense** - Confidently build complex queries with real-time IDE feedback when something’s wrong.
+- **Powerful IntelliSense** - Confidently build complex queries with real-time IDE guidance and warnings when something’s wrong.
 - **Minimal memory usage** - One class instance per database row, minimizing memory usage and avoiding duplicates through smart state management.
 - **Optimized querying** - Fewer queries through intelligent transaction grouping without sacrificing data integrity.
 - **Expressive template-literal WHERE clauses** - Write complex, readable conditions such as LIKE, ≥, nested property access, array element matching and more — using clean tagged template literals, without string concatenation or cluttered code.
